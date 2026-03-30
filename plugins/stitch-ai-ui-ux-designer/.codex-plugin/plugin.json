@@ -1,0 +1,44 @@
+{
+  "name": "stitch-ai-ui-ux-designer",
+  "version": "1.0.0",
+  "description": "Design-first Codex plugin for UI concepts, UX flows, audits, and implementation-ready frontend direction.",
+  "author": {
+    "name": "Nursat",
+    "email": "158581107+Nur1sat@users.noreply.github.com",
+    "url": "https://github.com/Nur1sat"
+  },
+  "homepage": "https://github.com/Nur1sat/Math_Site",
+  "repository": "https://github.com/Nur1sat/Math_Site",
+  "license": "MIT",
+  "keywords": [
+    "ui",
+    "ux",
+    "design",
+    "frontend",
+    "figma"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Stitch AI UI/UX Designer",
+    "shortDescription": "Design sharper interfaces and user flows inside Codex.",
+    "longDescription": "A design-focused Codex plugin for turning rough ideas into intentional UI direction, UX flows, audits, and implementation-ready frontend guidance.",
+    "developerName": "Nursat",
+    "category": "Design",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/Nur1sat/Math_Site",
+    "privacyPolicyURL": "https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement",
+    "termsOfServiceURL": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service",
+    "defaultPrompt": [
+      "Design a polished landing page for my product.",
+      "Audit this UI for UX, hierarchy, and accessibility gaps.",
+      "Turn this feature idea into a mobile app user flow."
+    ],
+    "brandColor": "#0F766E",
+    "composerIcon": "./assets/icon.svg",
+    "logo": "./assets/logo.svg",
+    "screenshots": []
+  }
+}

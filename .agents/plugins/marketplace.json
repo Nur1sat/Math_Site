@@ -1,0 +1,20 @@
+{
+  "name": "math-website-local-plugins",
+  "interface": {
+    "displayName": "Math Website Plugins"
+  },
+  "plugins": [
+    {
+      "name": "stitch-ai-ui-ux-designer",
+      "source": {
+        "source": "local",
+        "path": "./plugins/stitch-ai-ui-ux-designer"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Design"
+    }
+  ]
+}

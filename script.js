@@ -85,7 +85,6 @@ const DEFAULT_TASKS = [
 ];
 
 const state = {
-  activeRole: "admin",
   adminAuthenticated: loadAdminAuth(),
   tasks: loadTasks(),
   progress: loadProgress(),
@@ -98,12 +97,9 @@ const state = {
   studentEvaluation: null
 };
 
-const roleTabs = Array.from(document.querySelectorAll(".role-tab"));
-const panels = Array.from(document.querySelectorAll(".panel"));
-const authStateBadge = document.getElementById("auth-state-badge");
-const logoutAdminButton = document.getElementById("logout-admin-button");
 const adminAuthView = document.getElementById("admin-auth-view");
 const adminDashboardView = document.getElementById("admin-dashboard-view");
+const adminLoginCard = document.getElementById("admin-login-card");
 const adminLoginForm = document.getElementById("admin-login-form");
 const adminEmailInput = document.getElementById("admin-email-input");
 const adminPasswordInput = document.getElementById("admin-password-input");
@@ -131,6 +127,7 @@ const resetFormButton = document.getElementById("reset-form-button");
 const adminSearch = document.getElementById("admin-search");
 const adminTaskList = document.getElementById("admin-task-list");
 const optionInputs = [0, 1, 2, 3].map((index) => document.getElementById(`option-${index}`));
+
 const studentTotalCount = document.getElementById("student-total-count");
 const studentSolvedCount = document.getElementById("student-solved-count");
 const studentCorrectCount = document.getElementById("student-correct-count");
@@ -150,6 +147,9 @@ const studentFeedbackTitle = document.getElementById("student-feedback-title");
 const studentFeedbackText = document.getElementById("student-feedback-text");
 const studentResetAnswer = document.getElementById("student-reset-answer");
 const studentNextTask = document.getElementById("student-next-task");
+
+const landingPreviewList = document.getElementById("landing-preview-list");
+const landingActivityNote = document.getElementById("landing-activity-note");
 
 function createId() {
   return `task-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -173,6 +173,19 @@ function loadAdminAuth() {
 
 function saveAdminAuth() {
   localStorage.setItem(STORAGE_KEYS.adminAuth, state.adminAuthenticated ? "true" : "false");
+}
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.progress);
+    return raw ? JSON.parse(raw) : {};
+  } catch (_error) {
+    return {};
+  }
+}
+
+function saveProgress() {
+  localStorage.setItem(STORAGE_KEYS.progress, JSON.stringify(state.progress));
 }
 
 function normalizeDifficulty(value) {
@@ -278,21 +291,8 @@ function loadTasks() {
   }
 }
 
-function loadProgress() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEYS.progress);
-    return raw ? JSON.parse(raw) : {};
-  } catch (_error) {
-    return {};
-  }
-}
-
 function saveTasks() {
   localStorage.setItem(STORAGE_KEYS.tasks, JSON.stringify(state.tasks));
-}
-
-function saveProgress() {
-  localStorage.setItem(STORAGE_KEYS.progress, JSON.stringify(state.progress));
 }
 
 function escapeHtml(value) {
@@ -327,6 +327,10 @@ function renderVisual(items) {
 }
 
 function setStatusBox(node, message, type = "neutral") {
+  if (!node) {
+    return;
+  }
+
   node.textContent = message;
   node.className = "status-box";
 
@@ -343,57 +347,144 @@ function setLoginStatus(message, type = "neutral") {
   setStatusBox(adminLoginStatus, message, type);
 }
 
-function ensureAdminAuth() {
-  if (state.adminAuthenticated) {
-    return true;
-  }
-
-  state.activeRole = "admin";
-  renderRoleSwitch();
-  setLoginStatus("Сначала войдите в админ-панель.", "error");
-  return false;
-}
-
 function getCategories() {
   return [...new Set(state.tasks.map((task) => task.category))].sort((left, right) =>
     left.localeCompare(right, "ru")
   );
 }
 
-function renderRoleSwitch() {
-  roleTabs.forEach((button) => {
-    button.classList.toggle("is-active", button.dataset.role === state.activeRole);
-  });
+function getMetricsSummary() {
+  const total = state.tasks.length;
+  const manual = state.tasks.filter((task) => task.source === "manual").length;
+  const imported = state.tasks.filter((task) => task.source === "imported").length;
+  const solved = state.tasks.filter((task) => state.progress[task.id]?.solved).length;
+  const correct = state.tasks.filter((task) => state.progress[task.id]?.correct).length;
+  const categories = getCategories().length;
+  const accuracy = solved ? Math.round((correct / solved) * 100) : 0;
 
-  panels.forEach((panel) => {
-    panel.classList.toggle("is-active", panel.dataset.panel === state.activeRole);
+  return {
+    total,
+    manual,
+    imported,
+    solved,
+    correct,
+    categories,
+    accuracy
+  };
+}
+
+function setStat(name, value) {
+  document.querySelectorAll(`[data-stat="${name}"]`).forEach((node) => {
+    node.textContent = String(value);
   });
 }
 
+function renderGlobalChrome() {
+  const label = state.adminAuthenticated ? "Админ в студии" : "Админ не вошёл";
+
+  document.querySelectorAll("[data-auth-badge]").forEach((badge) => {
+    badge.textContent = label;
+    badge.classList.toggle("is-open", state.adminAuthenticated);
+  });
+
+  document.querySelectorAll("[data-logout-admin]").forEach((button) => {
+    button.classList.toggle("hidden", !state.adminAuthenticated);
+  });
+}
+
+function renderSharedStats() {
+  const summary = getMetricsSummary();
+  setStat("tasks-total", summary.total);
+  setStat("categories-total", summary.categories);
+  setStat("manual-total", summary.manual);
+  setStat("imported-total", summary.imported);
+  setStat("solved-total", summary.solved);
+  setStat("correct-total", summary.correct);
+  setStat("accuracy-rate", `${summary.accuracy}%`);
+}
+
+function renderLandingPreview() {
+  if (!landingPreviewList) {
+    return;
+  }
+
+  const previewTasks = state.tasks.slice(0, 3);
+
+  if (!previewTasks.length) {
+    landingPreviewList.innerHTML = `<div class="empty-state">В библиотеке пока нет задач.</div>`;
+  } else {
+    landingPreviewList.innerHTML = previewTasks
+      .map(
+        (task) => `
+          <article class="task-teaser">
+            <div class="meta-row">
+              <span class="pill">${escapeHtml(task.category)}</span>
+              <span class="pill muted">${escapeHtml(task.difficulty)}</span>
+            </div>
+            <h3>${escapeHtml(task.title)}</h3>
+            <p>${escapeHtml(task.prompt)}</p>
+            ${renderVisual(task.visual)}
+            <a class="text-link" href="student.html">Открыть в практике</a>
+          </article>
+        `
+      )
+      .join("");
+  }
+
+  if (landingActivityNote) {
+    const summary = getMetricsSummary();
+
+    landingActivityNote.textContent = summary.solved
+      ? `Сейчас в библиотеке ${summary.total} задач в ${summary.categories} категориях. Ученик решил ${summary.solved}, точность ${summary.accuracy}%.`
+      : `Сейчас в библиотеке ${summary.total} задач в ${summary.categories} категориях. Начните со страницы практики, чтобы собрать первый прогресс.`;
+  }
+}
+
+function ensureAdminAuth() {
+  if (state.adminAuthenticated) {
+    return true;
+  }
+
+  setLoginStatus("Сначала войдите в админ-панель.", "error");
+  adminLoginCard?.scrollIntoView({ behavior: "smooth", block: "center" });
+  return false;
+}
+
 function renderAdminAccess() {
-  authStateBadge.textContent = state.adminAuthenticated ? "Админ в студии" : "Админ не вошёл";
-  authStateBadge.classList.toggle("is-open", state.adminAuthenticated);
-  logoutAdminButton.classList.toggle("hidden", !state.adminAuthenticated);
-  adminAuthView.classList.toggle("hidden", state.adminAuthenticated);
-  adminDashboardView.classList.toggle("hidden", !state.adminAuthenticated);
+  if (!adminAuthView && !adminDashboardView) {
+    return;
+  }
+
+  if (adminAuthView) {
+    adminAuthView.classList.toggle("hidden", state.adminAuthenticated);
+  }
+
+  if (adminDashboardView) {
+    adminDashboardView.classList.toggle("hidden", !state.adminAuthenticated);
+  }
 
   if (!state.adminAuthenticated) {
     setAdminStatus("Войдите как администратор, чтобы управлять банком задач.");
-    setLoginStatus("Используй демо-данные выше, чтобы войти и открыть форму добавления задач.");
+    setLoginStatus("Используй демо-данные выше, чтобы открыть рабочую зону администратора.");
   }
 }
 
 function renderAdminMetrics() {
-  totalTasksCount.textContent = String(state.tasks.length);
-  manualTasksCount.textContent = String(
-    state.tasks.filter((task) => task.source === "manual").length
-  );
-  importedTasksCount.textContent = String(
-    state.tasks.filter((task) => task.source === "imported").length
-  );
+  if (!totalTasksCount || !manualTasksCount || !importedTasksCount) {
+    return;
+  }
+
+  const summary = getMetricsSummary();
+  totalTasksCount.textContent = String(summary.total);
+  manualTasksCount.textContent = String(summary.manual);
+  importedTasksCount.textContent = String(summary.imported);
 }
 
 function renderCategoryDatalist() {
+  if (!categoryList) {
+    return;
+  }
+
   categoryList.innerHTML = getCategories()
     .map((category) => `<option value="${escapeHtml(category)}"></option>`)
     .join("");
@@ -406,14 +497,18 @@ function getAdminFilteredTasks() {
     return state.tasks;
   }
 
-  return state.tasks.filter((task) => {
-    return [task.title, task.prompt, task.category].some((value) =>
+  return state.tasks.filter((task) =>
+    [task.title, task.prompt, task.category].some((value) =>
       value.toLowerCase().includes(query)
-    );
-  });
+    )
+  );
 }
 
 function renderAdminTaskList() {
+  if (!adminTaskList) {
+    return;
+  }
+
   const filteredTasks = getAdminFilteredTasks();
 
   if (!filteredTasks.length) {
@@ -425,7 +520,7 @@ function renderAdminTaskList() {
     .map(
       (task) => `
         <article class="bank-item" data-task-id="${escapeHtml(task.id)}">
-          <div class="section-title">
+          <div class="section-head">
             <h3>${escapeHtml(task.title)}</h3>
             <p>${escapeHtml(task.prompt)}</p>
           </div>
@@ -449,6 +544,11 @@ function renderAdminTaskList() {
 
 function resetForm() {
   state.editingTaskId = "";
+
+  if (!taskForm) {
+    return;
+  }
+
   taskIdInput.value = "";
   taskForm.reset();
   difficultyInput.value = "Старт";
@@ -458,6 +558,10 @@ function resetForm() {
 }
 
 function fillForm(taskId) {
+  if (!taskForm) {
+    return;
+  }
+
   const task = state.tasks.find((item) => item.id === taskId);
 
   if (!task) {
@@ -475,7 +579,9 @@ function fillForm(taskId) {
   answerInput.value = String(task.answer);
 
   optionInputs.forEach((input, index) => {
-    input.value = task.options[index] || "";
+    if (input) {
+      input.value = task.options[index] || "";
+    }
   });
 
   formTitle.textContent = "Редактирование задачи";
@@ -484,6 +590,10 @@ function fillForm(taskId) {
 }
 
 function renderStudentFilters() {
+  if (!studentCategoryFilter || !studentDifficultyFilter) {
+    return;
+  }
+
   const categories = getCategories();
   const currentCategory = categories.includes(state.studentCategory) ? state.studentCategory : "all";
   state.studentCategory = currentCategory;
@@ -533,16 +643,21 @@ function ensureStudentSelection() {
 }
 
 function renderStudentMetrics() {
-  const total = state.tasks.length;
-  const solved = Object.values(state.progress).filter((item) => item?.solved).length;
-  const correct = Object.values(state.progress).filter((item) => item?.correct).length;
+  if (!studentTotalCount || !studentSolvedCount || !studentCorrectCount) {
+    return;
+  }
 
-  studentTotalCount.textContent = String(total);
-  studentSolvedCount.textContent = String(solved);
-  studentCorrectCount.textContent = String(correct);
+  const summary = getMetricsSummary();
+  studentTotalCount.textContent = String(summary.total);
+  studentSolvedCount.textContent = String(summary.solved);
+  studentCorrectCount.textContent = String(summary.correct);
 }
 
 function renderStudentTaskList() {
+  if (!studentTaskList) {
+    return;
+  }
+
   const filteredTasks = getStudentFilteredTasks();
 
   if (!filteredTasks.length) {
@@ -563,7 +678,7 @@ function renderStudentTaskList() {
       return `
         <article class="library-item ${task.id === state.selectedStudentTaskId ? "is-active" : ""}" data-task-id="${escapeHtml(task.id)}">
           <div class="library-item-head">
-            <div class="section-title">
+            <div class="section-head">
               <h3>${escapeHtml(task.title)}</h3>
               <small>${escapeHtml(task.prompt)}</small>
             </div>
@@ -589,6 +704,23 @@ function resetStudentEvaluation() {
 }
 
 function renderStudentPlayer() {
+  if (
+    !studentTaskCategory ||
+    !studentTaskDifficulty ||
+    !studentTaskSource ||
+    !studentTaskTitle ||
+    !studentTaskPrompt ||
+    !studentTaskVisual ||
+    !studentTaskOptions ||
+    !studentFeedback ||
+    !studentFeedbackTitle ||
+    !studentFeedbackText ||
+    !studentResetAnswer ||
+    !studentNextTask
+  ) {
+    return;
+  }
+
   const task = getSelectedTask();
 
   if (!task) {
@@ -663,7 +795,9 @@ function renderStudentPlayer() {
 }
 
 function renderAll() {
-  renderRoleSwitch();
+  renderGlobalChrome();
+  renderSharedStats();
+  renderLandingPreview();
   renderAdminAccess();
   renderAdminMetrics();
   renderCategoryDatalist();
@@ -676,7 +810,7 @@ function renderAll() {
 }
 
 function createTaskFromForm() {
-  const options = optionInputs.map((input) => input.value.trim()).filter(Boolean);
+  const options = optionInputs.map((input) => input?.value.trim() || "").filter(Boolean);
   const answer = Number(answerInput.value);
 
   if (options.length < 2) {
@@ -787,7 +921,10 @@ function handleAdminTaskAction(event) {
 
 async function handleUpload(event) {
   if (!ensureAdminAuth()) {
-    taskUpload.value = "";
+    if (taskUpload) {
+      taskUpload.value = "";
+    }
+
     return;
   }
 
@@ -814,7 +951,7 @@ async function handleUpload(event) {
   } catch (error) {
     setAdminStatus(error.message, "error");
   } finally {
-    taskUpload.value = "";
+    event.target.value = "";
   }
 }
 
@@ -930,6 +1067,7 @@ function handleStudentAnswer(event) {
   };
 
   recordStudentProgress(task, isCorrect);
+  renderSharedStats();
   renderStudentMetrics();
   renderStudentTaskList();
   renderStudentPlayer();
@@ -973,58 +1111,122 @@ function handleAdminLogin(event) {
 function handleAdminLogout() {
   state.adminAuthenticated = false;
   saveAdminAuth();
-  adminLoginForm.reset();
-  state.editingTaskId = "";
+
+  if (adminLoginForm) {
+    adminLoginForm.reset();
+  }
+
   resetForm();
   renderAll();
   setLoginStatus("Вы вышли из студии. Чтобы вернуться, снова выполните вход.");
 }
 
-roleTabs.forEach((button) => {
-  button.addEventListener("click", () => {
-    state.activeRole = button.dataset.role;
-    renderRoleSwitch();
-  });
-});
-
-adminLoginForm.addEventListener("submit", handleAdminLogin);
-logoutAdminButton.addEventListener("click", handleAdminLogout);
-taskForm.addEventListener("submit", handleFormSubmit);
-resetFormButton.addEventListener("click", () => {
-  if (!ensureAdminAuth()) {
+function syncFromStorageEvent(event) {
+  if (!Object.values(STORAGE_KEYS).includes(event.key)) {
     return;
   }
 
-  resetForm();
-  setAdminStatus("Форма очищена.");
-});
-adminSearch.addEventListener("input", () => {
-  state.adminSearch = adminSearch.value;
-  renderAdminTaskList();
-});
-adminTaskList.addEventListener("click", handleAdminTaskAction);
-taskUpload.addEventListener("change", handleUpload);
-exportButton.addEventListener("click", handleExport);
-restoreDemoButton.addEventListener("click", handleRestoreDemo);
-studentSearch.addEventListener("input", () => {
-  state.studentSearch = studentSearch.value.trim();
+  state.adminAuthenticated = loadAdminAuth();
+  state.tasks = loadTasks();
+  state.progress = loadProgress();
+
+  if (state.editingTaskId && !state.tasks.some((task) => task.id === state.editingTaskId)) {
+    resetForm();
+  }
+
   renderAll();
-});
-studentCategoryFilter.addEventListener("change", () => {
-  state.studentCategory = studentCategoryFilter.value;
-  renderAll();
-});
-studentDifficultyFilter.addEventListener("change", () => {
-  state.studentDifficulty = studentDifficultyFilter.value;
-  renderAll();
-});
-studentTaskList.addEventListener("click", handleStudentTaskList);
-studentTaskOptions.addEventListener("click", handleStudentAnswer);
-studentResetAnswer.addEventListener("click", () => {
-  resetStudentEvaluation();
-  renderStudentPlayer();
-});
-studentNextTask.addEventListener("click", handleNextStudentTask);
+}
+
+function attachEventListeners() {
+  document.querySelectorAll("[data-logout-admin]").forEach((button) => {
+    button.addEventListener("click", handleAdminLogout);
+  });
+
+  if (adminLoginForm) {
+    adminLoginForm.addEventListener("submit", handleAdminLogin);
+  }
+
+  if (taskForm) {
+    taskForm.addEventListener("submit", handleFormSubmit);
+  }
+
+  if (resetFormButton) {
+    resetFormButton.addEventListener("click", () => {
+      if (!ensureAdminAuth()) {
+        return;
+      }
+
+      resetForm();
+      setAdminStatus("Форма очищена.");
+    });
+  }
+
+  if (adminSearch) {
+    adminSearch.addEventListener("input", () => {
+      state.adminSearch = adminSearch.value;
+      renderAdminTaskList();
+    });
+  }
+
+  if (adminTaskList) {
+    adminTaskList.addEventListener("click", handleAdminTaskAction);
+  }
+
+  if (taskUpload) {
+    taskUpload.addEventListener("change", handleUpload);
+  }
+
+  if (exportButton) {
+    exportButton.addEventListener("click", handleExport);
+  }
+
+  if (restoreDemoButton) {
+    restoreDemoButton.addEventListener("click", handleRestoreDemo);
+  }
+
+  if (studentSearch) {
+    studentSearch.addEventListener("input", () => {
+      state.studentSearch = studentSearch.value.trim();
+      renderAll();
+    });
+  }
+
+  if (studentCategoryFilter) {
+    studentCategoryFilter.addEventListener("change", () => {
+      state.studentCategory = studentCategoryFilter.value;
+      renderAll();
+    });
+  }
+
+  if (studentDifficultyFilter) {
+    studentDifficultyFilter.addEventListener("change", () => {
+      state.studentDifficulty = studentDifficultyFilter.value;
+      renderAll();
+    });
+  }
+
+  if (studentTaskList) {
+    studentTaskList.addEventListener("click", handleStudentTaskList);
+  }
+
+  if (studentTaskOptions) {
+    studentTaskOptions.addEventListener("click", handleStudentAnswer);
+  }
+
+  if (studentResetAnswer) {
+    studentResetAnswer.addEventListener("click", () => {
+      resetStudentEvaluation();
+      renderStudentPlayer();
+    });
+  }
+
+  if (studentNextTask) {
+    studentNextTask.addEventListener("click", handleNextStudentTask);
+  }
+
+  window.addEventListener("storage", syncFromStorageEvent);
+}
 
 resetForm();
 renderAll();
+attachEventListeners();

@@ -3,540 +3,221 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Logic Spark Studio</title>
+    <title>Logic Spark | Платформа логики и математики</title>
     <meta
       name="description"
-      content="Logic Spark: платформа логических задач с красивой админ-студией и панелью ученика."
+      content="Logic Spark разделяет обзор, админ-студию и ученическую практику на отдельные страницы, чтобы работа с задачами была понятной и красивой."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
   </head>
-  <body id="top">
-    <div class="app-shell">
+  <body data-page="home" id="top">
+    <div class="site-shell">
       <div class="ambient ambient-a"></div>
       <div class="ambient ambient-b"></div>
       <div class="ambient ambient-c"></div>
 
-      <header class="app-header card">
-        <div class="brand-cluster">
-          <a class="brand" href="#top">
-            <span class="brand-mark">LS</span>
-            <span class="brand-copy">
-              <strong>Logic Spark</strong>
-              <small>task studio for logical practice</small>
-            </span>
-          </a>
+      <header class="site-header shell-card">
+        <a class="brand" href="index.html" aria-label="Logic Spark home">
+          <span class="brand-mark">LS</span>
+          <span class="brand-copy">
+            <strong>Logic Spark</strong>
+            <small>platform for logic and math practice</small>
+          </span>
+        </a>
 
-          <p class="header-note">
-            Администратор входит в защищённую студию, публикует задания и сразу видит,
-            как они выглядят у ученика.
-          </p>
-        </div>
+        <nav class="site-nav" aria-label="Основная навигация">
+          <a href="index.html" aria-current="page">Обзор</a>
+          <a href="studio.html">Студия</a>
+          <a href="student.html">Практика</a>
+        </nav>
 
-        <div class="header-controls">
-          <div class="access-chip" id="auth-state-badge">Админ не вошёл</div>
-
-          <div class="role-switch" role="tablist" aria-label="Режим интерфейса">
-            <button class="role-tab is-active" type="button" data-role="admin">
-              Студия
-            </button>
-            <button class="role-tab" type="button" data-role="student">
-              Ученик
-            </button>
-          </div>
-
-          <button class="button button-ghost hidden" id="logout-admin-button" type="button">
+        <div class="site-actions">
+          <span class="access-chip" data-auth-badge>Админ не вошёл</span>
+          <button class="button button-ghost hidden" data-logout-admin type="button">
             Выйти
           </button>
+          <a class="button button-primary" href="studio.html">Открыть студию</a>
         </div>
       </header>
 
-      <main class="panel-stack">
-        <section class="panel is-active" data-panel="admin">
-          <div class="panel-heading hero-panel">
-            <div class="hero-copy">
-              <span class="eyebrow">Admin Studio</span>
-              <h1>Красивый вход, мощная форма создания задач и быстрый контроль банка.</h1>
-              <p>
-                В этой версии админ-панель получила нормальный вход, более дорогой по виду
-                интерфейс и рабочий контур: логин, создание, редактирование, импорт и
-                публикация задач для учеников.
-              </p>
+      <main class="page-stack">
+        <section class="page-hero shell-card hero-home">
+          <div class="hero-copy">
+            <span class="eyebrow">Math and Logic Platform</span>
+            <h1>Одна идея, три ясные страницы: обзор, студия и практика.</h1>
+            <p>
+              Сайт больше не прячет разные режимы в одном экране. Теперь у Logic Spark есть
+              отдельная обзорная страница, рабочая студия администратора и чистая ученическая
+              практика без лишнего интерфейсного шума.
+            </p>
 
-              <div class="hero-actions">
-                <a class="button button-primary" href="#admin-login-card">Войти в студию</a>
-                <a class="button button-secondary" href="#student-panel-anchor">Открыть режим ученика</a>
-              </div>
-
-              <div class="hero-metrics">
-                <article class="hero-metric">
-                  <span>Flow</span>
-                  <strong>Login</strong>
-                </article>
-                <article class="hero-metric">
-                  <span>Flow</span>
-                  <strong>Create</strong>
-                </article>
-                <article class="hero-metric">
-                  <span>Flow</span>
-                  <strong>Publish</strong>
-                </article>
-              </div>
+            <div class="hero-actions">
+              <a class="button button-primary" href="studio.html">Создавать задания</a>
+              <a class="button button-secondary" href="student.html">Решать задания</a>
             </div>
 
-            <aside class="hero-spotlight">
-              <div class="spotlight-card spotlight-dark">
-                <span class="spotlight-label">Вход в студию</span>
-                <h2>Контент не лежит в открытом виде.</h2>
-                <p>
-                  Если админ не авторизован, он видит только экран входа и подсказки по
-                  формату задач. После входа открывается рабочая зона.
-                </p>
-              </div>
-
-              <div class="spotlight-card spotlight-light">
-                <span class="spotlight-label">Task Bank</span>
-                <ul class="preview-list">
-                  <li>Создание и редактирование в одной форме</li>
-                  <li>Импорт JSON и экспорт текущего банка</li>
-                  <li>Мгновенная публикация в режим ученика</li>
-                </ul>
-              </div>
-            </aside>
+            <p class="support-note" id="landing-activity-note">
+              Загружаю текущее состояние библиотеки задач.
+            </p>
           </div>
 
-          <div class="admin-auth-view" id="admin-auth-view">
-            <section class="card auth-story">
-              <span class="eyebrow">Secure Entry</span>
-              <h2>Доступ к панели автора задач.</h2>
-              <p>
-                Вход нужен для управления библиотекой заданий. Это фронтенд-демо, поэтому
-                авторизация условная, но UX уже ведёт себя как отдельная защищённая зона.
-              </p>
+          <div class="hero-board">
+            <div class="stat-grid">
+              <article class="stat-card">
+                <span>Заданий в банке</span>
+                <strong data-stat="tasks-total">0</strong>
+                <small>Единый источник контента для студии и ученика.</small>
+              </article>
 
-              <div class="credential-card">
-                <span>Демо-доступ</span>
+              <article class="stat-card">
+                <span>Категорий</span>
+                <strong data-stat="categories-total">0</strong>
+                <small>Последовательности, пространство, стратегия и внимание.</small>
+              </article>
+
+              <article class="stat-card">
+                <span>Решено</span>
+                <strong data-stat="solved-total">0</strong>
+                <small>Прогресс хранится локально и виден между страницами.</small>
+              </article>
+
+              <article class="stat-card accent-card">
+                <span>Точность</span>
+                <strong data-stat="accuracy-rate">0%</strong>
+                <small>Ученик получает чистую обратную связь после каждого ответа.</small>
+              </article>
+            </div>
+
+            <article class="feature-card dark-panel">
+              <span class="spotlight-label">Демо-доступ</span>
+              <h2>Студия уже работает как отдельная защищённая зона.</h2>
+              <div class="credential-card compact">
+                <span>Email</span>
                 <strong>admin@logicspark.app</strong>
+                <span>Пароль</span>
                 <strong>spark-admin-2026</strong>
               </div>
-
-              <div class="story-grid">
-                <article class="story-tile">
-                  <span>01</span>
-                  <h3>Создавай</h3>
-                  <p>Название, категория, визуальная линия, варианты и объяснение в одном потоке.</p>
-                </article>
-
-                <article class="story-tile">
-                  <span>02</span>
-                  <h3>Публикуй</h3>
-                  <p>Новые задания сразу попадают в ученическую библиотеку без перезагрузки схемы.</p>
-                </article>
-
-                <article class="story-tile">
-                  <span>03</span>
-                  <h3>Управляй</h3>
-                  <p>Редактирование и удаление уже встроены прямо в банк задач.</p>
-                </article>
-              </div>
-            </section>
-
-            <section class="card login-card" id="admin-login-card">
-              <div class="section-title">
-                <h2>Вход администратора</h2>
-                <p>После входа откроется рабочая студия управления задачами.</p>
-              </div>
-
-              <form id="admin-login-form" class="auth-form">
-                <label class="field">
-                  <span>Email</span>
-                  <input
-                    id="admin-email-input"
-                    type="email"
-                    autocomplete="username"
-                    placeholder="admin@logicspark.app"
-                    required
-                  />
-                </label>
-
-                <label class="field">
-                  <span>Пароль</span>
-                  <input
-                    id="admin-password-input"
-                    type="password"
-                    autocomplete="current-password"
-                    placeholder="spark-admin-2026"
-                    required
-                  />
-                </label>
-
-                <button class="button button-primary button-wide" type="submit">
-                  Открыть студию
-                </button>
-              </form>
-
-              <div class="status-box" id="admin-login-status">
-                Используй демо-данные выше, чтобы войти и открыть форму добавления задач.
-              </div>
-            </section>
-          </div>
-
-          <div class="admin-dashboard-view hidden" id="admin-dashboard-view">
-            <section class="card studio-banner">
-              <div class="studio-copy">
-                <span class="eyebrow">Workspace</span>
-                <h2>Студия задач открыта.</h2>
-                <p>
-                  Здесь администратор работает уже внутри защищённой области: следит за
-                  банком, добавляет новые задания и контролирует качество контента.
-                </p>
-              </div>
-
-              <div class="studio-ribbon">
-                <div class="ribbon-block">
-                  <span>Поток</span>
-                  <strong>Авторизация</strong>
-                </div>
-                <div class="ribbon-arrow">→</div>
-                <div class="ribbon-block">
-                  <span>Поток</span>
-                  <strong>Создание задачи</strong>
-                </div>
-                <div class="ribbon-arrow">→</div>
-                <div class="ribbon-block">
-                  <span>Поток</span>
-                  <strong>Показ ученику</strong>
-                </div>
-              </div>
-            </section>
-
-            <div class="admin-layout">
-              <aside class="admin-sidebar">
-                <article class="card metrics-card">
-                  <div class="metric">
-                    <span>Всего задач</span>
-                    <strong id="total-tasks-count">0</strong>
-                  </div>
-                  <div class="metric">
-                    <span>Создано вручную</span>
-                    <strong id="manual-tasks-count">0</strong>
-                  </div>
-                  <div class="metric">
-                    <span>Импортировано</span>
-                    <strong id="imported-tasks-count">0</strong>
-                  </div>
-                </article>
-
-                <article class="card import-card">
-                  <div class="section-title">
-                    <h2>Импорт и выгрузка</h2>
-                    <p>
-                      Поддерживается массив задач или объект вида
-                      <code>{ "tasks": [...] }</code>.
-                    </p>
-                  </div>
-
-                  <label class="field">
-                    <span>Загрузить JSON-файл</span>
-                    <input id="task-upload" type="file" accept="application/json" />
-                  </label>
-
-                  <div class="inline-actions">
-                    <button class="button button-secondary" id="export-button" type="button">
-                      Выгрузить банк
-                    </button>
-                    <button class="button button-ghost" id="restore-demo-button" type="button">
-                      Вернуть демо
-                    </button>
-                  </div>
-
-                  <div class="status-box" id="admin-status">
-                    Изменения сохраняются локально в браузере и сразу отображаются у ученика.
-                  </div>
-                </article>
-
-                <article class="card schema-card">
-                  <div class="section-title">
-                    <h2>Структура задачи</h2>
-                    <p>Минимальный формат, с которым уже можно работать в текущем UI.</p>
-                  </div>
-
-                  <ul class="schema-list">
-                    <li><strong>title</strong> Короткое название.</li>
-                    <li><strong>category</strong> Последовательности, стратегия и так далее.</li>
-                    <li><strong>difficulty</strong> Старт, Уверенно или Сложно.</li>
-                    <li><strong>prompt</strong> Формулировка задачи.</li>
-                    <li><strong>visual</strong> Массив элементов или строка через запятую.</li>
-                    <li><strong>options</strong> Варианты ответа.</li>
-                    <li><strong>answer</strong> Индекс правильного варианта, начиная с нуля.</li>
-                  </ul>
-                </article>
-              </aside>
-
-              <div class="admin-main">
-                <section class="card form-card">
-                  <div class="section-title">
-                    <h2 id="form-title">Новая задача</h2>
-                    <p>
-                      Заполни поля, сохрани задачу и сразу открой её в ученическом режиме.
-                    </p>
-                  </div>
-
-                  <form id="task-form" class="task-form">
-                    <input id="task-id" type="hidden" />
-
-                    <div class="field-grid two">
-                      <label class="field">
-                        <span>Название</span>
-                        <input
-                          id="title-input"
-                          type="text"
-                          placeholder="Найди следующее число"
-                          required
-                        />
-                      </label>
-
-                      <label class="field">
-                        <span>Категория</span>
-                        <input
-                          id="category-input"
-                          type="text"
-                          list="category-list"
-                          placeholder="Последовательности"
-                          required
-                        />
-                        <datalist id="category-list"></datalist>
-                      </label>
-                    </div>
-
-                    <div class="field-grid two">
-                      <label class="field">
-                        <span>Сложность</span>
-                        <select id="difficulty-input">
-                          <option value="Старт">Старт</option>
-                          <option value="Уверенно">Уверенно</option>
-                          <option value="Сложно">Сложно</option>
-                        </select>
-                      </label>
-
-                      <label class="field">
-                        <span>Визуальная строка</span>
-                        <textarea
-                          id="visual-input"
-                          rows="3"
-                          placeholder="2, 4, 6, 8, ?"
-                        ></textarea>
-                      </label>
-                    </div>
-
-                    <label class="field">
-                      <span>Условие задачи</span>
-                      <textarea
-                        id="prompt-input"
-                        rows="4"
-                        placeholder="Какое число должно стоять дальше?"
-                        required
-                      ></textarea>
-                    </label>
-
-                    <div class="field-grid two">
-                      <label class="field">
-                        <span>Вариант 1</span>
-                        <input id="option-0" type="text" placeholder="9" required />
-                      </label>
-                      <label class="field">
-                        <span>Вариант 2</span>
-                        <input id="option-1" type="text" placeholder="10" required />
-                      </label>
-                      <label class="field">
-                        <span>Вариант 3</span>
-                        <input id="option-2" type="text" placeholder="11" />
-                      </label>
-                      <label class="field">
-                        <span>Вариант 4</span>
-                        <input id="option-3" type="text" placeholder="12" />
-                      </label>
-                    </div>
-
-                    <div class="field-grid two">
-                      <label class="field">
-                        <span>Правильный вариант</span>
-                        <select id="answer-input">
-                          <option value="0">Вариант 1</option>
-                          <option value="1">Вариант 2</option>
-                          <option value="2">Вариант 3</option>
-                          <option value="3">Вариант 4</option>
-                        </select>
-                      </label>
-
-                      <label class="field">
-                        <span>Пояснение</span>
-                        <textarea
-                          id="explanation-input"
-                          rows="3"
-                          placeholder="Кратко объясни, почему ответ правильный."
-                        ></textarea>
-                      </label>
-                    </div>
-
-                    <div class="inline-actions">
-                      <button class="button button-primary" id="save-button" type="submit">
-                        Сохранить задачу
-                      </button>
-                      <button class="button button-secondary" id="reset-form-button" type="button">
-                        Очистить форму
-                      </button>
-                    </div>
-                  </form>
-                </section>
-
-                <section class="card bank-card">
-                  <div class="section-title">
-                    <h2>Банк задач</h2>
-                    <p>
-                      Быстрый просмотр, поиск, редактирование и удаление без лишнего шума.
-                    </p>
-                  </div>
-
-                  <label class="field compact-field">
-                    <span>Поиск по банку</span>
-                    <input
-                      id="admin-search"
-                      type="search"
-                      placeholder="Название, условие или категория"
-                    />
-                  </label>
-
-                  <div class="task-bank-list" id="admin-task-list"></div>
-                </section>
-              </div>
-            </div>
+            </article>
           </div>
         </section>
 
-        <section class="panel" data-panel="student" id="student-panel-anchor">
-          <div class="panel-heading hero-panel student-hero">
-            <div class="hero-copy">
-              <span class="eyebrow">Student Mode</span>
-              <h1>Чистый экран для решения задач без админского шума.</h1>
-              <p>
-                Здесь ученик видит только библиотеку заданий, фильтры, красивый экран решения
-                и понятную обратную связь после ответа.
-              </p>
+        <section class="tile-grid">
+          <article class="shell-card page-tile">
+            <span class="eyebrow">Page 01</span>
+            <h2>Обзор</h2>
+            <p>
+              Входная страница теперь объясняет продукт, показывает живые метрики и ведёт
+              пользователя по понятным маршрутам вместо переключателя режимов.
+            </p>
+            <a class="text-link" href="index.html">Остаться на обзоре</a>
+          </article>
+
+          <article class="shell-card page-tile accent-panel">
+            <span class="eyebrow">Page 02</span>
+            <h2>Студия</h2>
+            <p>
+              Администратор работает в собственной среде: вход, создание, редактирование,
+              импорт и экспорт задач собраны в одном рабочем потоке.
+            </p>
+            <a class="text-link" href="studio.html">Перейти в студию</a>
+          </article>
+
+          <article class="shell-card page-tile dark-panel">
+            <span class="eyebrow">Page 03</span>
+            <h2>Практика</h2>
+            <p>
+              Ученик получает отдельную страницу с фильтрами, библиотекой, карточкой задания
+              и понятной обратной связью по каждой попытке.
+            </p>
+            <a class="text-link light" href="student.html">Открыть практику</a>
+          </article>
+        </section>
+
+        <section class="split-grid">
+          <article class="shell-card story-card">
+            <div class="section-head">
+              <span class="eyebrow">Flow Map</span>
+              <h2>Новый маршрут убирает лишние решения на каждом шаге.</h2>
             </div>
 
-            <aside class="hero-spotlight">
-              <div class="spotlight-card spotlight-dark student-preview">
-                <span class="spotlight-label">Live Content</span>
-                <h2>Все новые задачи появляются здесь сразу.</h2>
-                <p>
-                  Любая задача, созданная или импортированная администратором, автоматически
-                  становится доступной для решения.
-                </p>
-              </div>
-            </aside>
+            <div class="story-grid">
+              <article class="story-step">
+                <span>01</span>
+                <h3>Обзор</h3>
+                <p>Понять, что это за продукт, как устроены роли и куда идти дальше.</p>
+              </article>
+
+              <article class="story-step">
+                <span>02</span>
+                <h3>Студия</h3>
+                <p>Войти, собрать задачу, импортировать набор или исправить существующий банк.</p>
+              </article>
+
+              <article class="story-step">
+                <span>03</span>
+                <h3>Практика</h3>
+                <p>Открыть ученический режим и сразу проверить, как выглядит контент в бою.</p>
+              </article>
+            </div>
+          </article>
+
+          <aside class="shell-card preview-card">
+            <div class="section-head">
+              <span class="eyebrow">Live Library</span>
+              <h2>Последние задания из библиотеки.</h2>
+            </div>
+
+            <div class="task-teaser-list" id="landing-preview-list"></div>
+          </aside>
+        </section>
+
+        <section class="shell-card insight-card">
+          <div class="section-head">
+            <span class="eyebrow">Design Upgrade</span>
+            <h2>Интерфейс стал похож на маленький продукт, а не на демо с двумя скрытыми панелями.</h2>
           </div>
 
-          <div class="student-layout">
-            <aside class="student-sidebar">
-              <article class="card metrics-card student-metrics">
-                <div class="metric">
-                  <span>Доступно задач</span>
-                  <strong id="student-total-count">0</strong>
-                </div>
-                <div class="metric">
-                  <span>Решено</span>
-                  <strong id="student-solved-count">0</strong>
-                </div>
-                <div class="metric">
-                  <span>Верно решено</span>
-                  <strong id="student-correct-count">0</strong>
-                </div>
-              </article>
-
-              <article class="card filter-card">
-                <div class="section-title">
-                  <h2>Фильтры</h2>
-                </div>
-
-                <label class="field compact-field">
-                  <span>Поиск</span>
-                  <input
-                    id="student-search"
-                    type="search"
-                    placeholder="Например, фигуры или стратегия"
-                  />
-                </label>
-
-                <div class="field-grid two">
-                  <label class="field compact-field">
-                    <span>Категория</span>
-                    <select id="student-category-filter"></select>
-                  </label>
-
-                  <label class="field compact-field">
-                    <span>Сложность</span>
-                    <select id="student-difficulty-filter">
-                      <option value="all">Все</option>
-                      <option value="Старт">Старт</option>
-                      <option value="Уверенно">Уверенно</option>
-                      <option value="Сложно">Сложно</option>
-                    </select>
-                  </label>
-                </div>
-              </article>
-
-              <article class="card library-card">
-                <div class="section-title">
-                  <h2>Список задач</h2>
-                </div>
-
-                <div class="library-list" id="student-task-list"></div>
-              </article>
-            </aside>
-
-            <section class="card player-card">
-              <div class="player-topline">
-                <span class="pill" id="student-task-category">Категория</span>
-                <span class="pill muted" id="student-task-difficulty">Сложность</span>
-              </div>
-
-              <p class="player-label" id="student-task-source">Выберите задачу из списка слева.</p>
-              <h2 id="student-task-title">Здесь появится задание</h2>
-              <p class="player-prompt" id="student-task-prompt">
-                Администратор может добавить новую задачу вручную или импортировать целый
-                набор, и всё сразу появится в этой панели.
+          <div class="bullet-grid">
+            <article class="bullet-card">
+              <h3>Разделённая архитектура</h3>
+              <p>
+                Каждая страница решает одну задачу: рассказать, управлять или практиковаться.
               </p>
+            </article>
 
-              <div class="task-visual" id="student-task-visual"></div>
-              <div class="task-options" id="student-task-options"></div>
+            <article class="bullet-card">
+              <h3>Общий слой данных</h3>
+              <p>
+                Задания, авторизация и прогресс остаются общими через localStorage, поэтому
+                продукт ощущается связанным.
+              </p>
+            </article>
 
-              <div class="feedback-panel" id="student-feedback">
-                <strong id="student-feedback-title">Режим ожидания</strong>
-                <p id="student-feedback-text">
-                  Выбери задачу и нажми на один из вариантов ответа.
-                </p>
-              </div>
-
-              <div class="inline-actions">
-                <button class="button button-secondary" id="student-reset-answer" type="button">
-                  Решить ещё раз
-                </button>
-                <button class="button button-primary" id="student-next-task" type="button">
-                  Следующая задача
-                </button>
-              </div>
-            </section>
+            <article class="bullet-card">
+              <h3>Более зрелый тон</h3>
+              <p>
+                Навигация, иерархия, карточки, ритм и CTA теперь объясняют сценарии без
+                лишних слов и переключателей.
+              </p>
+            </article>
           </div>
         </section>
       </main>
-    </div>
 
-    <script src="script.js"></script>
+      <footer class="site-footer">
+        <p>Logic Spark показывает, как один контентный банк может жить в отдельных продуктах для автора и ученика.</p>
+        <div class="footer-links">
+          <a href="studio.html">Студия</a>
+          <a href="student.html">Практика</a>
+        </div>
+      </footer>
+    </div>
   </body>
 </html>

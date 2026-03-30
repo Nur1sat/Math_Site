@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Logic Spark Practice | Страница ученика</title>
+    <meta
+      name="description"
+      content="Чистая страница ученика для фильтрации, выбора и решения логических задач с обратной связью."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body data-page="student" id="top">
+    <div class="site-shell">
+      <div class="ambient ambient-a"></div>
+      <div class="ambient ambient-b"></div>
+      <div class="ambient ambient-c"></div>
+
+      <header class="site-header shell-card">
+        <a class="brand" href="index.html" aria-label="Logic Spark home">
+          <span class="brand-mark">LS</span>
+          <span class="brand-copy">
+            <strong>Logic Spark</strong>
+            <small>student practice interface</small>
+          </span>
+        </a>
+
+        <nav class="site-nav" aria-label="Основная навигация">
+          <a href="index.html">Обзор</a>
+          <a href="studio.html">Студия</a>
+          <a href="student.html" aria-current="page">Практика</a>
+        </nav>
+
+        <div class="site-actions">
+          <span class="access-chip" data-auth-badge>Админ не вошёл</span>
+          <button class="button button-ghost hidden" data-logout-admin type="button">
+            Выйти
+          </button>
+          <a class="button button-secondary" href="studio.html">В студию</a>
+        </div>
+      </header>
+
+      <main class="page-stack">
+        <section class="page-hero shell-card">
+          <div class="hero-copy">
+            <span class="eyebrow">Student Practice</span>
+            <h1>Отдельный экран для решения задач без админского контекста.</h1>
+            <p>
+              Ученик работает только с библиотекой, фильтрами, карточкой задания и обратной
+              связью. Всё лишнее убрано, а новые задачи из студии появляются здесь сразу.
+            </p>
+
+            <div class="hero-actions">
+              <a class="button button-primary" href="#practice-workspace">К задачам</a>
+              <a class="button button-secondary" href="studio.html">Открыть студию автора</a>
+            </div>
+          </div>
+
+          <div class="hero-board">
+            <div class="stat-grid">
+              <article class="stat-card">
+                <span>Доступно задач</span>
+                <strong data-stat="tasks-total">0</strong>
+                <small>Весь опубликованный контент собран в единой библиотеке.</small>
+              </article>
+
+              <article class="stat-card">
+                <span>Решено</span>
+                <strong data-stat="solved-total">0</strong>
+                <small>Каждая попытка сохраняется локально в браузере.</small>
+              </article>
+
+              <article class="stat-card">
+                <span>Верно решено</span>
+                <strong data-stat="correct-total">0</strong>
+                <small>Правильные ответы отмечаются и остаются в прогрессе.</small>
+              </article>
+
+              <article class="stat-card accent-card">
+                <span>Точность</span>
+                <strong data-stat="accuracy-rate">0%</strong>
+                <small>Обратная связь помогает быстро понять ход решения.</small>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="practice-grid" id="practice-workspace">
+          <aside class="sidebar-stack">
+            <article class="shell-card metrics-card student-metrics">
+              <div class="section-head">
+                <span class="eyebrow">Progress</span>
+                <h2>Сводка ученика.</h2>
+              </div>
+
+              <div class="metric-stack">
+                <div class="metric">
+                  <span>Доступно задач</span>
+                  <strong id="student-total-count">0</strong>
+                </div>
+                <div class="metric">
+                  <span>Решено</span>
+                  <strong id="student-solved-count">0</strong>
+                </div>
+                <div class="metric">
+                  <span>Верно решено</span>
+                  <strong id="student-correct-count">0</strong>
+                </div>
+              </div>
+            </article>
+
+            <article class="shell-card filter-card">
+              <div class="section-head">
+                <span class="eyebrow">Filters</span>
+                <h2>Найди нужный тип задачи.</h2>
+              </div>
+
+              <label class="field compact-field">
+                <span>Поиск</span>
+                <input
+                  id="student-search"
+                  type="search"
+                  placeholder="Например, фигуры или стратегия"
+                />
+              </label>
+
+              <div class="field-grid two">
+                <label class="field compact-field">
+                  <span>Категория</span>
+                  <select id="student-category-filter"></select>
+                </label>
+
+                <label class="field compact-field">
+                  <span>Сложность</span>
+                  <select id="student-difficulty-filter">
+                    <option value="all">Все</option>
+                    <option value="Старт">Старт</option>
+                    <option value="Уверенно">Уверенно</option>
+                    <option value="Сложно">Сложно</option>
+                  </select>
+                </label>
+              </div>
+            </article>
+
+            <article class="shell-card library-card">
+              <div class="section-head">
+                <span class="eyebrow">Library</span>
+                <h2>Список задач</h2>
+              </div>
+
+              <div class="library-list" id="student-task-list"></div>
+            </article>
+          </aside>
+
+          <section class="shell-card player-card">
+            <div class="player-topline">
+              <span class="pill" id="student-task-category">Категория</span>
+              <span class="pill muted" id="student-task-difficulty">Сложность</span>
+            </div>
+
+            <p class="player-label" id="student-task-source">Выберите задачу из списка слева.</p>
+            <h2 id="student-task-title">Здесь появится задание</h2>
+            <p class="player-prompt" id="student-task-prompt">
+              Администратор может добавить новую задачу вручную или импортировать целый набор,
+              и всё сразу появится в этой панели.
+            </p>
+
+            <div class="task-visual" id="student-task-visual"></div>
+            <div class="task-options" id="student-task-options"></div>
+
+            <div class="feedback-panel" id="student-feedback">
+              <strong id="student-feedback-title">Режим ожидания</strong>
+              <p id="student-feedback-text">Выбери задачу и нажми на один из вариантов ответа.</p>
+            </div>
+
+            <div class="inline-actions">
+              <button class="button button-secondary" id="student-reset-answer" type="button">
+                Решить ещё раз
+              </button>
+              <button class="button button-primary" id="student-next-task" type="button">
+                Следующая задача
+              </button>
+            </div>
+          </section>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>Практика использует тот же банк задач, что и студия, но показывает его в спокойном учебном интерфейсе.</p>
+        <div class="footer-links">
+          <a href="index.html">Обзор</a>
+          <a href="studio.html">Студия</a>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
