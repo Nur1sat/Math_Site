@@ -1,6 +1,12 @@
 const STORAGE_KEYS = {
-  tasks: "logic-spark.tasks.v2",
-  progress: "logic-spark.progress.v2"
+  tasks: "logic-spark.tasks.v3",
+  progress: "logic-spark.progress.v3",
+  adminAuth: "logic-spark.admin-auth.v1"
+};
+
+const DEMO_ADMIN = {
+  email: "admin@logicspark.app",
+  password: "spark-admin-2026"
 };
 
 const DEFAULT_TASKS = [
@@ -80,6 +86,7 @@ const DEFAULT_TASKS = [
 
 const state = {
   activeRole: "admin",
+  adminAuthenticated: loadAdminAuth(),
   tasks: loadTasks(),
   progress: loadProgress(),
   editingTaskId: "",
@@ -93,6 +100,14 @@ const state = {
 
 const roleTabs = Array.from(document.querySelectorAll(".role-tab"));
 const panels = Array.from(document.querySelectorAll(".panel"));
+const authStateBadge = document.getElementById("auth-state-badge");
+const logoutAdminButton = document.getElementById("logout-admin-button");
+const adminAuthView = document.getElementById("admin-auth-view");
+const adminDashboardView = document.getElementById("admin-dashboard-view");
+const adminLoginForm = document.getElementById("admin-login-form");
+const adminEmailInput = document.getElementById("admin-email-input");
+const adminPasswordInput = document.getElementById("admin-password-input");
+const adminLoginStatus = document.getElementById("admin-login-status");
 const totalTasksCount = document.getElementById("total-tasks-count");
 const manualTasksCount = document.getElementById("manual-tasks-count");
 const importedTasksCount = document.getElementById("imported-tasks-count");
@@ -146,6 +161,18 @@ function cloneDefaultTasks() {
     visual: [...task.visual],
     options: [...task.options]
   }));
+}
+
+function loadAdminAuth() {
+  try {
+    return localStorage.getItem(STORAGE_KEYS.adminAuth) === "true";
+  } catch (_error) {
+    return false;
+  }
+}
+
+function saveAdminAuth() {
+  localStorage.setItem(STORAGE_KEYS.adminAuth, state.adminAuthenticated ? "true" : "false");
 }
 
 function normalizeDifficulty(value) {
@@ -268,13 +295,13 @@ function saveProgress() {
   localStorage.setItem(STORAGE_KEYS.progress, JSON.stringify(state.progress));
 }
 
-function setAdminStatus(message, type = "neutral") {
-  adminStatus.textContent = message;
-  adminStatus.className = "status-box";
-
-  if (type === "success" || type === "error") {
-    adminStatus.classList.add(type);
-  }
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
 }
 
 function sourceLabel(source) {
@@ -289,15 +316,6 @@ function sourceLabel(source) {
   return "Демо";
 }
 
-function escapeHtml(value) {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
-
 function renderVisual(items) {
   const values = items.length ? items : ["Без визуальной строки"];
 
@@ -306,6 +324,34 @@ function renderVisual(items) {
       ${values.map((item) => `<span class="visual-chip">${escapeHtml(item)}</span>`).join("")}
     </div>
   `;
+}
+
+function setStatusBox(node, message, type = "neutral") {
+  node.textContent = message;
+  node.className = "status-box";
+
+  if (type === "success" || type === "error") {
+    node.classList.add(type);
+  }
+}
+
+function setAdminStatus(message, type = "neutral") {
+  setStatusBox(adminStatus, message, type);
+}
+
+function setLoginStatus(message, type = "neutral") {
+  setStatusBox(adminLoginStatus, message, type);
+}
+
+function ensureAdminAuth() {
+  if (state.adminAuthenticated) {
+    return true;
+  }
+
+  state.activeRole = "admin";
+  renderRoleSwitch();
+  setLoginStatus("Сначала войдите в админ-панель.", "error");
+  return false;
 }
 
 function getCategories() {
@@ -322,6 +368,19 @@ function renderRoleSwitch() {
   panels.forEach((panel) => {
     panel.classList.toggle("is-active", panel.dataset.panel === state.activeRole);
   });
+}
+
+function renderAdminAccess() {
+  authStateBadge.textContent = state.adminAuthenticated ? "Админ в студии" : "Админ не вошёл";
+  authStateBadge.classList.toggle("is-open", state.adminAuthenticated);
+  logoutAdminButton.classList.toggle("hidden", !state.adminAuthenticated);
+  adminAuthView.classList.toggle("hidden", state.adminAuthenticated);
+  adminDashboardView.classList.toggle("hidden", !state.adminAuthenticated);
+
+  if (!state.adminAuthenticated) {
+    setAdminStatus("Войдите как администратор, чтобы управлять банком задач.");
+    setLoginStatus("Используй демо-данные выше, чтобы войти и открыть форму добавления задач.");
+  }
 }
 
 function renderAdminMetrics() {
@@ -538,7 +597,7 @@ function renderStudentPlayer() {
     studentTaskSource.textContent = "Выберите задачу из списка слева.";
     studentTaskTitle.textContent = "Здесь появится задание";
     studentTaskPrompt.textContent =
-      "Админ может добавить новую задачу вручную или загрузить JSON, и она сразу станет доступна в этой панели.";
+      "Администратор может добавить новую задачу вручную или импортировать целый набор, и всё сразу появится в этой панели.";
     studentTaskVisual.innerHTML = `<div class="empty-state">Нет выбранной задачи.</div>`;
     studentTaskOptions.innerHTML = "";
     studentFeedback.className = "feedback-panel";
@@ -599,11 +658,13 @@ function renderStudentPlayer() {
     studentFeedbackTitle.textContent = "Нужно ещё подумать";
   }
 
-  studentFeedbackText.textContent = task.explanation || "Пояснение для этой задачи пока не добавлено.";
+  studentFeedbackText.textContent =
+    task.explanation || "Пояснение для этой задачи пока не добавлено.";
 }
 
 function renderAll() {
   renderRoleSwitch();
+  renderAdminAccess();
   renderAdminMetrics();
   renderCategoryDatalist();
   renderAdminTaskList();
@@ -649,6 +710,10 @@ function createTaskFromForm() {
 function handleFormSubmit(event) {
   event.preventDefault();
 
+  if (!ensureAdminAuth()) {
+    return;
+  }
+
   try {
     const task = createTaskFromForm();
     const existingIndex = state.tasks.findIndex((item) => item.id === task.id);
@@ -672,7 +737,7 @@ function handleFormSubmit(event) {
 function handleAdminTaskAction(event) {
   const button = event.target.closest("button");
 
-  if (!button) {
+  if (!button || !ensureAdminAuth()) {
     return;
   }
 
@@ -721,6 +786,11 @@ function handleAdminTaskAction(event) {
 }
 
 async function handleUpload(event) {
+  if (!ensureAdminAuth()) {
+    taskUpload.value = "";
+    return;
+  }
+
   const file = event.target.files?.[0];
 
   if (!file) {
@@ -749,6 +819,10 @@ async function handleUpload(event) {
 }
 
 function handleExport() {
+  if (!ensureAdminAuth()) {
+    return;
+  }
+
   const payload = state.tasks.map((task) => ({
     title: task.title,
     category: task.category,
@@ -775,6 +849,10 @@ function handleExport() {
 }
 
 function handleRestoreDemo() {
+  if (!ensureAdminAuth()) {
+    return;
+  }
+
   const confirmed = window.confirm("Сбросить банк задач к демо-набору?");
 
   if (!confirmed) {
@@ -873,6 +951,35 @@ function handleNextStudentTask() {
   renderStudentPlayer();
 }
 
+function handleAdminLogin(event) {
+  event.preventDefault();
+
+  const email = adminEmailInput.value.trim().toLowerCase();
+  const password = adminPasswordInput.value;
+
+  if (email !== DEMO_ADMIN.email || password !== DEMO_ADMIN.password) {
+    setLoginStatus("Неверный email или пароль для демо-входа.", "error");
+    return;
+  }
+
+  state.adminAuthenticated = true;
+  saveAdminAuth();
+  adminPasswordInput.value = "";
+  setLoginStatus("Вход выполнен. Студия администратора открыта.", "success");
+  setAdminStatus("Добро пожаловать в студию управления задачами.", "success");
+  renderAll();
+}
+
+function handleAdminLogout() {
+  state.adminAuthenticated = false;
+  saveAdminAuth();
+  adminLoginForm.reset();
+  state.editingTaskId = "";
+  resetForm();
+  renderAll();
+  setLoginStatus("Вы вышли из студии. Чтобы вернуться, снова выполните вход.");
+}
+
 roleTabs.forEach((button) => {
   button.addEventListener("click", () => {
     state.activeRole = button.dataset.role;
@@ -880,8 +987,14 @@ roleTabs.forEach((button) => {
   });
 });
 
+adminLoginForm.addEventListener("submit", handleAdminLogin);
+logoutAdminButton.addEventListener("click", handleAdminLogout);
 taskForm.addEventListener("submit", handleFormSubmit);
 resetFormButton.addEventListener("click", () => {
+  if (!ensureAdminAuth()) {
+    return;
+  }
+
   resetForm();
   setAdminStatus("Форма очищена.");
 });
@@ -913,4 +1026,5 @@ studentResetAnswer.addEventListener("click", () => {
 });
 studentNextTask.addEventListener("click", handleNextStudentTask);
 
+resetForm();
 renderAll();
