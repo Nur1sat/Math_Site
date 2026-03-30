@@ -1,310 +1,916 @@
-const tasks = [
+const STORAGE_KEYS = {
+  tasks: "logic-spark.tasks.v2",
+  progress: "logic-spark.progress.v2"
+};
+
+const DEFAULT_TASKS = [
   {
+    id: "seed-1",
+    title: "Продолжи ряд",
     category: "Последовательности",
-    level: "Лёгкое",
-    question: "Какое число должно стоять дальше?",
+    difficulty: "Старт",
+    prompt: "Какое число должно стоять дальше?",
     visual: ["2", "4", "6", "8", "?"],
     options: ["9", "10", "11", "12"],
     answer: 1,
-    explanation: "Числа увеличиваются на 2, поэтому после 8 идёт 10."
+    explanation: "Числа растут на 2, поэтому после 8 идёт 10.",
+    source: "seed"
   },
   {
+    id: "seed-2",
+    title: "Найди лишнее",
     category: "Сравнение",
-    level: "Лёгкое",
-    question: "Что здесь лишнее?",
+    difficulty: "Старт",
+    prompt: "Какое слово не подходит к остальным?",
     visual: ["Круг", "Квадрат", "Треугольник", "Собака"],
     options: ["Круг", "Собака", "Квадрат", "Треугольник"],
     answer: 1,
-    explanation: "Три слова обозначают фигуры, а собака к ним не относится."
+    explanation: "Три варианта обозначают фигуры, а собака к фигурам не относится.",
+    source: "seed"
   },
   {
+    id: "seed-3",
+    title: "Поворот стрелки",
     category: "Пространство",
-    level: "Среднее",
-    question: "Если стрелка была направлена вверх и повернулась направо, куда она смотрит теперь?",
+    difficulty: "Уверенно",
+    prompt: "Если стрелка была направлена вверх и повернулась направо, куда она смотрит теперь?",
     visual: ["↑", "↻", "?"],
     options: ["←", "↓", "→", "↗"],
     answer: 2,
-    explanation: "Поворот направо переводит стрелку из положения вверх в положение вправо."
+    explanation: "После поворота направо стрелка из положения вверх смотрит вправо.",
+    source: "seed"
   },
   {
+    id: "seed-4",
+    title: "Короткая стратегия",
     category: "Стратегия",
-    level: "Среднее",
-    question: "У Лены 3 красных карандаша и 2 синих. Сколько всего карандашей?",
-    visual: ["3 красных", "+", "2 синих", "="],
-    options: ["4", "5", "6", "7"],
-    answer: 1,
-    explanation: "Нужно объединить две группы: 3 + 2 = 5."
-  },
-  {
-    category: "Внимательность",
-    level: "Среднее",
-    question: "Какая буква встречается два раза?",
-    visual: ["М", "А", "Р", "А", "К"],
-    options: ["М", "А", "Р", "К"],
-    answer: 1,
-    explanation: "Буква А стоит на второй и четвёртой позиции."
-  },
-  {
-    category: "Последовательности",
-    level: "Среднее",
-    question: "Выбери фигуру, которая продолжит ряд.",
-    visual: ["●", "●●", "●●●", "?"],
-    options: ["●", "●●", "●●●", "●●●●"],
-    answer: 3,
-    explanation: "Каждый раз добавляется один кружок: 1, 2, 3, потом 4."
-  },
-  {
-    category: "Сравнение",
-    level: "Среднее",
-    question: "Какой предмет не подходит к остальным?",
-    visual: ["Стол", "Стул", "Шкаф", "Яблоко"],
-    options: ["Стол", "Шкаф", "Яблоко", "Стул"],
-    answer: 2,
-    explanation: "Три варианта относятся к мебели, а яблоко относится к еде."
-  },
-  {
-    category: "Пространство",
-    level: "Сложнее",
-    question: "Мяч лежит слева от коробки. Где коробка относительно мяча?",
-    visual: ["⚽", "⬜"],
-    options: ["Слева", "Справа", "Сверху", "Снизу"],
-    answer: 1,
-    explanation: "Если мяч слева от коробки, значит коробка находится справа от мяча."
-  },
-  {
-    category: "Стратегия",
-    level: "Сложнее",
-    question: "Чтобы получить 10, что нужно прибавить к 6?",
+    difficulty: "Уверенно",
+    prompt: "Чтобы получить 10, что нужно прибавить к 6?",
     visual: ["6", "+", "?", "=", "10"],
     options: ["2", "3", "4", "5"],
     answer: 2,
-    explanation: "От 10 отнимаем 6 и получаем 4."
+    explanation: "Из 10 вычитаем 6 и получаем 4.",
+    source: "seed"
   },
   {
+    id: "seed-5",
+    title: "Проверка внимания",
     category: "Внимательность",
-    level: "Сложнее",
-    question: "Найди правильное утверждение.",
-    visual: ["Кошка меньше шкафа", "Шкаф выше стула", "Стул выше шкафа"],
-    options: [
-      "Стул выше шкафа",
-      "Шкаф выше стула",
-      "Кошка выше шкафа",
-      "Шкаф меньше кошки"
-    ],
+    difficulty: "Уверенно",
+    prompt: "Какая буква встречается два раза?",
+    visual: ["М", "А", "Р", "А", "К"],
+    options: ["М", "А", "Р", "К"],
     answer: 1,
-    explanation: "Из предложенных вариантов логически верным остаётся только 'Шкаф выше стула'."
+    explanation: "Буква А стоит на второй и четвёртой позиции.",
+    source: "seed"
   },
   {
-    category: "Последовательности",
-    level: "Сложнее",
-    question: "Какое число пропущено?",
-    visual: ["1", "3", "5", "?", "9"],
-    options: ["6", "7", "8", "10"],
+    id: "seed-6",
+    title: "Кто справа",
+    category: "Пространство",
+    difficulty: "Сложно",
+    prompt: "Мяч лежит слева от коробки. Где коробка относительно мяча?",
+    visual: ["⚽", "⬜"],
+    options: ["Слева", "Справа", "Сверху", "Снизу"],
     answer: 1,
-    explanation: "Это ряд нечётных чисел: 1, 3, 5, 7, 9."
-  },
-  {
-    category: "Стратегия",
-    level: "Сложнее",
-    question: "У тебя 7 наклеек. Ты подарил 2 и потом получил ещё 3. Сколько стало?",
-    visual: ["7", "−", "2", "+", "3"],
-    options: ["7", "8", "9", "10"],
-    answer: 1,
-    explanation: "Сначала 7 − 2 = 5, потом 5 + 3 = 8."
+    explanation: "Если мяч слева, то коробка находится справа от мяча.",
+    source: "seed"
   }
 ];
 
-const taskCategory = document.getElementById("task-category");
-const taskLevel = document.getElementById("task-level");
-const taskIndex = document.getElementById("task-index");
-const taskQuestion = document.getElementById("task-question");
-const taskVisual = document.getElementById("task-visual");
-const taskOptions = document.getElementById("task-options");
-const feedbackPanel = document.getElementById("feedback-panel");
-const feedbackTitle = document.getElementById("feedback-title");
-const feedbackText = document.getElementById("feedback-text");
-const nextButton = document.getElementById("next-button");
-const restartButton = document.getElementById("restart-button");
-const resolvedCount = document.getElementById("resolved-count");
-const correctCount = document.getElementById("correct-count");
-const currentTrack = document.getElementById("current-track");
-const upcomingList = document.getElementById("upcoming-list");
+const state = {
+  activeRole: "admin",
+  tasks: loadTasks(),
+  progress: loadProgress(),
+  editingTaskId: "",
+  adminSearch: "",
+  studentSearch: "",
+  studentCategory: "all",
+  studentDifficulty: "all",
+  selectedStudentTaskId: "",
+  studentEvaluation: null
+};
 
-let currentTaskIndex = 0;
-let resolved = 0;
-let correct = 0;
-let locked = false;
+const roleTabs = Array.from(document.querySelectorAll(".role-tab"));
+const panels = Array.from(document.querySelectorAll(".panel"));
+const totalTasksCount = document.getElementById("total-tasks-count");
+const manualTasksCount = document.getElementById("manual-tasks-count");
+const importedTasksCount = document.getElementById("imported-tasks-count");
+const adminStatus = document.getElementById("admin-status");
+const categoryList = document.getElementById("category-list");
+const taskUpload = document.getElementById("task-upload");
+const exportButton = document.getElementById("export-button");
+const restoreDemoButton = document.getElementById("restore-demo-button");
+const formTitle = document.getElementById("form-title");
+const taskForm = document.getElementById("task-form");
+const taskIdInput = document.getElementById("task-id");
+const titleInput = document.getElementById("title-input");
+const categoryInput = document.getElementById("category-input");
+const difficultyInput = document.getElementById("difficulty-input");
+const visualInput = document.getElementById("visual-input");
+const promptInput = document.getElementById("prompt-input");
+const explanationInput = document.getElementById("explanation-input");
+const answerInput = document.getElementById("answer-input");
+const saveButton = document.getElementById("save-button");
+const resetFormButton = document.getElementById("reset-form-button");
+const adminSearch = document.getElementById("admin-search");
+const adminTaskList = document.getElementById("admin-task-list");
+const optionInputs = [0, 1, 2, 3].map((index) => document.getElementById(`option-${index}`));
+const studentTotalCount = document.getElementById("student-total-count");
+const studentSolvedCount = document.getElementById("student-solved-count");
+const studentCorrectCount = document.getElementById("student-correct-count");
+const studentSearch = document.getElementById("student-search");
+const studentCategoryFilter = document.getElementById("student-category-filter");
+const studentDifficultyFilter = document.getElementById("student-difficulty-filter");
+const studentTaskList = document.getElementById("student-task-list");
+const studentTaskCategory = document.getElementById("student-task-category");
+const studentTaskDifficulty = document.getElementById("student-task-difficulty");
+const studentTaskSource = document.getElementById("student-task-source");
+const studentTaskTitle = document.getElementById("student-task-title");
+const studentTaskPrompt = document.getElementById("student-task-prompt");
+const studentTaskVisual = document.getElementById("student-task-visual");
+const studentTaskOptions = document.getElementById("student-task-options");
+const studentFeedback = document.getElementById("student-feedback");
+const studentFeedbackTitle = document.getElementById("student-feedback-title");
+const studentFeedbackText = document.getElementById("student-feedback-text");
+const studentResetAnswer = document.getElementById("student-reset-answer");
+const studentNextTask = document.getElementById("student-next-task");
+
+function createId() {
+  return `task-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function cloneDefaultTasks() {
+  return DEFAULT_TASKS.map((task) => ({
+    ...task,
+    visual: [...task.visual],
+    options: [...task.options]
+  }));
+}
+
+function normalizeDifficulty(value) {
+  if (value === "Старт" || value === "Уверенно" || value === "Сложно") {
+    return value;
+  }
+
+  return "Старт";
+}
+
+function normalizeVisual(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item).trim()).filter(Boolean);
+  }
+
+  if (typeof value !== "string") {
+    return [];
+  }
+
+  return value
+    .split(/\n|,/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function normalizeTask(rawTask, sourceFallback = "manual") {
+  if (!rawTask || typeof rawTask !== "object") {
+    throw new Error("Каждая задача должна быть объектом.");
+  }
+
+  const title = String(rawTask.title || "").trim();
+  const category = String(rawTask.category || "").trim();
+  const prompt = String(rawTask.prompt || "").trim();
+  const explanation = String(rawTask.explanation || "").trim();
+  const visual = normalizeVisual(rawTask.visual || rawTask.sequence || rawTask.visualTokens || "");
+  const options = Array.isArray(rawTask.options)
+    ? rawTask.options.map((option) => String(option).trim()).filter(Boolean)
+    : [];
+
+  if (!title) {
+    throw new Error("У задачи должно быть поле title.");
+  }
+
+  if (!category) {
+    throw new Error(`У задачи "${title}" должно быть поле category.`);
+  }
+
+  if (!prompt) {
+    throw new Error(`У задачи "${title}" должно быть поле prompt.`);
+  }
+
+  if (options.length < 2) {
+    throw new Error(`У задачи "${title}" должно быть минимум два варианта ответа.`);
+  }
+
+  let answerIndex = null;
+
+  if (typeof rawTask.answer === "number") {
+    answerIndex = rawTask.answer;
+  } else if (typeof rawTask.answerIndex === "number") {
+    answerIndex = rawTask.answerIndex;
+  } else if (typeof rawTask.correctOption === "number") {
+    answerIndex = rawTask.correctOption;
+  } else if (typeof rawTask.answer === "string") {
+    answerIndex = options.findIndex((option) => option === rawTask.answer.trim());
+  }
+
+  if (answerIndex === null || answerIndex < 0 || answerIndex >= options.length) {
+    throw new Error(`У задачи "${title}" не найден корректный индекс ответа.`);
+  }
+
+  return {
+    id: String(rawTask.id || createId()),
+    title,
+    category,
+    difficulty: normalizeDifficulty(rawTask.difficulty),
+    prompt,
+    visual,
+    options,
+    answer: answerIndex,
+    explanation,
+    source: rawTask.source || sourceFallback
+  };
+}
+
+function loadTasks() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.tasks);
+
+    if (!raw) {
+      return cloneDefaultTasks();
+    }
+
+    const parsed = JSON.parse(raw);
+
+    if (!Array.isArray(parsed) || !parsed.length) {
+      return cloneDefaultTasks();
+    }
+
+    return parsed.map((task) => normalizeTask(task, task.source || "manual"));
+  } catch (_error) {
+    return cloneDefaultTasks();
+  }
+}
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.progress);
+    return raw ? JSON.parse(raw) : {};
+  } catch (_error) {
+    return {};
+  }
+}
+
+function saveTasks() {
+  localStorage.setItem(STORAGE_KEYS.tasks, JSON.stringify(state.tasks));
+}
+
+function saveProgress() {
+  localStorage.setItem(STORAGE_KEYS.progress, JSON.stringify(state.progress));
+}
+
+function setAdminStatus(message, type = "neutral") {
+  adminStatus.textContent = message;
+  adminStatus.className = "status-box";
+
+  if (type === "success" || type === "error") {
+    adminStatus.classList.add(type);
+  }
+}
+
+function sourceLabel(source) {
+  if (source === "manual") {
+    return "Создано вручную";
+  }
+
+  if (source === "imported") {
+    return "Импорт";
+  }
+
+  return "Демо";
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
 
 function renderVisual(items) {
-  const wrapperClass = items.every((item) => item.length <= 2) ? "symbol-row" : "sequence-row";
+  const values = items.length ? items : ["Без визуальной строки"];
+
   return `
-    <div class="${wrapperClass}">
-      ${items
-        .map(
-          (item) => `<span class="${wrapperClass === "symbol-row" ? "symbol-chip" : "sequence-chip"}">${item}</span>`
-        )
-        .join("")}
+    <div class="visual-row">
+      ${values.map((item) => `<span class="visual-chip">${escapeHtml(item)}</span>`).join("")}
     </div>
   `;
 }
 
-function renderUpcoming() {
-  if (currentTaskIndex >= tasks.length) {
-    upcomingList.innerHTML = `
-      <li>
-        <strong>Финиш</strong>
-        <span>Спринт завершён. Можно начать заново.</span>
-      </li>
-    `;
+function getCategories() {
+  return [...new Set(state.tasks.map((task) => task.category))].sort((left, right) =>
+    left.localeCompare(right, "ru")
+  );
+}
+
+function renderRoleSwitch() {
+  roleTabs.forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.role === state.activeRole);
+  });
+
+  panels.forEach((panel) => {
+    panel.classList.toggle("is-active", panel.dataset.panel === state.activeRole);
+  });
+}
+
+function renderAdminMetrics() {
+  totalTasksCount.textContent = String(state.tasks.length);
+  manualTasksCount.textContent = String(
+    state.tasks.filter((task) => task.source === "manual").length
+  );
+  importedTasksCount.textContent = String(
+    state.tasks.filter((task) => task.source === "imported").length
+  );
+}
+
+function renderCategoryDatalist() {
+  categoryList.innerHTML = getCategories()
+    .map((category) => `<option value="${escapeHtml(category)}"></option>`)
+    .join("");
+}
+
+function getAdminFilteredTasks() {
+  const query = state.adminSearch.trim().toLowerCase();
+
+  if (!query) {
+    return state.tasks;
+  }
+
+  return state.tasks.filter((task) => {
+    return [task.title, task.prompt, task.category].some((value) =>
+      value.toLowerCase().includes(query)
+    );
+  });
+}
+
+function renderAdminTaskList() {
+  const filteredTasks = getAdminFilteredTasks();
+
+  if (!filteredTasks.length) {
+    adminTaskList.innerHTML = `<div class="empty-state">По этому запросу задач пока нет.</div>`;
     return;
   }
 
-  const upcoming = tasks.slice(currentTaskIndex + 1, currentTaskIndex + 4);
-  upcomingList.innerHTML = upcoming
+  adminTaskList.innerHTML = filteredTasks
     .map(
-      (task, index) => `
-        <li>
-          <strong>${index + currentTaskIndex + 2}</strong>
-          <span>${task.category}</span>
-        </li>
+      (task) => `
+        <article class="bank-item" data-task-id="${escapeHtml(task.id)}">
+          <div class="section-title">
+            <h3>${escapeHtml(task.title)}</h3>
+            <p>${escapeHtml(task.prompt)}</p>
+          </div>
+          <div class="meta-row">
+            <span class="pill">${escapeHtml(task.category)}</span>
+            <span class="pill muted">${escapeHtml(task.difficulty)}</span>
+            <span class="source-pill">${escapeHtml(sourceLabel(task.source))}</span>
+          </div>
+          <div class="bank-footer">
+            <small class="meta-note">${task.options.length} варианта ответа</small>
+            <div class="bank-actions">
+              <button type="button" data-action="edit">Редактировать</button>
+              <button type="button" class="danger" data-action="delete">Удалить</button>
+            </div>
+          </div>
+        </article>
       `
     )
     .join("");
+}
 
-  if (!upcoming.length) {
-    upcomingList.innerHTML = `
-      <li>
-        <strong>Финиш</strong>
-        <span>Это последняя задача в спринте.</span>
-      </li>
-    `;
+function resetForm() {
+  state.editingTaskId = "";
+  taskIdInput.value = "";
+  taskForm.reset();
+  difficultyInput.value = "Старт";
+  answerInput.value = "0";
+  formTitle.textContent = "Новая задача";
+  saveButton.textContent = "Сохранить задачу";
+}
+
+function fillForm(taskId) {
+  const task = state.tasks.find((item) => item.id === taskId);
+
+  if (!task) {
+    return;
   }
-}
 
-function updateStats() {
-  resolvedCount.textContent = `${resolved} / ${tasks.length}`;
-  correctCount.textContent = String(correct);
-  currentTrack.textContent = tasks[currentTaskIndex]?.category ?? "Спринт завершён";
-}
+  state.editingTaskId = task.id;
+  taskIdInput.value = task.id;
+  titleInput.value = task.title;
+  categoryInput.value = task.category;
+  difficultyInput.value = task.difficulty;
+  visualInput.value = task.visual.join(", ");
+  promptInput.value = task.prompt;
+  explanationInput.value = task.explanation;
+  answerInput.value = String(task.answer);
 
-function resetFeedback() {
-  feedbackPanel.className = "feedback-panel";
-  feedbackTitle.textContent = "Выбери один вариант";
-  feedbackText.textContent = "После ответа здесь появится короткое объяснение.";
-}
-
-function renderTask() {
-  const task = tasks[currentTaskIndex];
-  locked = false;
-
-  taskCategory.textContent = task.category;
-  taskLevel.textContent = task.level;
-  taskIndex.textContent = `Задача ${currentTaskIndex + 1} из ${tasks.length}`;
-  taskQuestion.textContent = task.question;
-  taskVisual.innerHTML = renderVisual(task.visual);
-  taskOptions.innerHTML = "";
-  nextButton.textContent = currentTaskIndex === tasks.length - 1 ? "Показать результат" : "Следующая задача";
-
-  task.options.forEach((option, index) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "task-option";
-    button.textContent = option;
-    button.addEventListener("click", () => handleAnswer(index));
-    taskOptions.appendChild(button);
+  optionInputs.forEach((input, index) => {
+    input.value = task.options[index] || "";
   });
 
-  resetFeedback();
-  updateStats();
-  renderUpcoming();
+  formTitle.textContent = "Редактирование задачи";
+  saveButton.textContent = "Обновить задачу";
+  setAdminStatus(`Задача "${task.title}" загружена в форму.`, "success");
 }
 
-function finishSprint() {
-  currentTaskIndex = tasks.length;
-  locked = true;
-  taskCategory.textContent = "Готово";
-  taskLevel.textContent = "Итог";
-  taskIndex.textContent = "Спринт завершён";
-  taskQuestion.textContent = "Хорошая база для сайта с логическими задачами.";
-  taskVisual.innerHTML = `
-    <div class="sequence-row">
-      <span class="sequence-chip">Верно: ${correct}</span>
-      <span class="sequence-chip">Всего: ${tasks.length}</span>
-    </div>
+function renderStudentFilters() {
+  const categories = getCategories();
+  const currentCategory = categories.includes(state.studentCategory) ? state.studentCategory : "all";
+  state.studentCategory = currentCategory;
+
+  studentCategoryFilter.innerHTML = `
+    <option value="all">Все категории</option>
+    ${categories
+      .map((category) => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`)
+      .join("")}
   `;
-  taskOptions.innerHTML = "";
-  feedbackPanel.className = "feedback-panel success";
-  feedbackTitle.textContent = "Финал";
-  feedbackText.textContent =
-    correct === tasks.length
-      ? "Все ответы верные. Можно добавлять уровни, сохранение прогресса и личный кабинет."
-      : "Демо уже показывает механику. Следующим шагом можно добавить авторизацию, базу заданий и фильтры.";
-  nextButton.disabled = true;
-  currentTrack.textContent = "Спринт завершён";
-  renderUpcoming();
+
+  studentCategoryFilter.value = state.studentCategory;
+  studentDifficultyFilter.value = state.studentDifficulty;
 }
 
-function handleAnswer(index) {
-  if (locked) {
-    return;
-  }
+function getStudentFilteredTasks() {
+  return state.tasks.filter((task) => {
+    const matchesSearch =
+      !state.studentSearch ||
+      [task.title, task.prompt, task.category].some((value) =>
+        value.toLowerCase().includes(state.studentSearch.toLowerCase())
+      );
+    const matchesCategory =
+      state.studentCategory === "all" || task.category === state.studentCategory;
+    const matchesDifficulty =
+      state.studentDifficulty === "all" || task.difficulty === state.studentDifficulty;
 
-  const task = tasks[currentTaskIndex];
-  const buttons = Array.from(taskOptions.querySelectorAll(".task-option"));
-  const isCorrect = index === task.answer;
-
-  locked = true;
-  resolved += 1;
-
-  buttons.forEach((button, buttonIndex) => {
-    button.disabled = true;
-
-    if (buttonIndex === task.answer) {
-      button.classList.add("correct");
-    }
-
-    if (buttonIndex === index && !isCorrect) {
-      button.classList.add("wrong");
-    }
+    return matchesSearch && matchesCategory && matchesDifficulty;
   });
-
-  if (isCorrect) {
-    correct += 1;
-    feedbackPanel.className = "feedback-panel success";
-    feedbackTitle.textContent = "Верно";
-  } else {
-    feedbackPanel.className = "feedback-panel error";
-    feedbackTitle.textContent = "Почти";
-  }
-
-  feedbackText.textContent = task.explanation;
-  updateStats();
 }
 
-nextButton.addEventListener("click", () => {
-  if (!locked && currentTaskIndex !== tasks.length - 1) {
+function ensureStudentSelection() {
+  const filteredTasks = getStudentFilteredTasks();
+
+  if (!filteredTasks.length) {
+    state.selectedStudentTaskId = "";
+    state.studentEvaluation = null;
     return;
   }
 
-  if (!locked && currentTaskIndex === tasks.length - 1) {
+  const exists = filteredTasks.some((task) => task.id === state.selectedStudentTaskId);
+
+  if (!exists) {
+    state.selectedStudentTaskId = filteredTasks[0].id;
+    state.studentEvaluation = null;
+  }
+}
+
+function renderStudentMetrics() {
+  const total = state.tasks.length;
+  const solved = Object.values(state.progress).filter((item) => item?.solved).length;
+  const correct = Object.values(state.progress).filter((item) => item?.correct).length;
+
+  studentTotalCount.textContent = String(total);
+  studentSolvedCount.textContent = String(solved);
+  studentCorrectCount.textContent = String(correct);
+}
+
+function renderStudentTaskList() {
+  const filteredTasks = getStudentFilteredTasks();
+
+  if (!filteredTasks.length) {
+    studentTaskList.innerHTML = `<div class="empty-state">По текущим фильтрам задач пока нет.</div>`;
     return;
   }
 
-  if (currentTaskIndex === tasks.length - 1) {
-    finishSprint();
+  studentTaskList.innerHTML = filteredTasks
+    .map((task) => {
+      const progress = state.progress[task.id];
+      const progressLabel = progress?.correct
+        ? "Решено верно"
+        : progress?.solved
+          ? "Есть попытка"
+          : "Новая задача";
+      const progressClass = progress?.correct ? "progress-chip good" : "progress-chip";
+
+      return `
+        <article class="library-item ${task.id === state.selectedStudentTaskId ? "is-active" : ""}" data-task-id="${escapeHtml(task.id)}">
+          <div class="library-item-head">
+            <div class="section-title">
+              <h3>${escapeHtml(task.title)}</h3>
+              <small>${escapeHtml(task.prompt)}</small>
+            </div>
+            <span class="${progressClass}">${escapeHtml(progressLabel)}</span>
+          </div>
+          <div class="meta-row">
+            <span class="pill">${escapeHtml(task.category)}</span>
+            <span class="pill muted">${escapeHtml(task.difficulty)}</span>
+          </div>
+          <button type="button" data-action="open">Открыть задачу</button>
+        </article>
+      `;
+    })
+    .join("");
+}
+
+function getSelectedTask() {
+  return state.tasks.find((task) => task.id === state.selectedStudentTaskId) || null;
+}
+
+function resetStudentEvaluation() {
+  state.studentEvaluation = null;
+}
+
+function renderStudentPlayer() {
+  const task = getSelectedTask();
+
+  if (!task) {
+    studentTaskCategory.textContent = "Категория";
+    studentTaskDifficulty.textContent = "Сложность";
+    studentTaskSource.textContent = "Выберите задачу из списка слева.";
+    studentTaskTitle.textContent = "Здесь появится задание";
+    studentTaskPrompt.textContent =
+      "Админ может добавить новую задачу вручную или загрузить JSON, и она сразу станет доступна в этой панели.";
+    studentTaskVisual.innerHTML = `<div class="empty-state">Нет выбранной задачи.</div>`;
+    studentTaskOptions.innerHTML = "";
+    studentFeedback.className = "feedback-panel";
+    studentFeedbackTitle.textContent = "Режим ожидания";
+    studentFeedbackText.textContent = "Выбери задачу и нажми на один из вариантов ответа.";
+    studentResetAnswer.disabled = true;
+    studentNextTask.disabled = true;
     return;
   }
 
-  currentTaskIndex += 1;
-  renderTask();
+  studentTaskCategory.textContent = task.category;
+  studentTaskDifficulty.textContent = task.difficulty;
+  studentTaskSource.textContent = sourceLabel(task.source);
+  studentTaskTitle.textContent = task.title;
+  studentTaskPrompt.textContent = task.prompt;
+  studentTaskVisual.innerHTML = renderVisual(task.visual);
+  studentResetAnswer.disabled = false;
+  studentNextTask.disabled = getStudentFilteredTasks().length <= 1;
+
+  studentTaskOptions.innerHTML = task.options
+    .map((option, index) => {
+      let className = "task-option";
+
+      if (state.studentEvaluation) {
+        if (index === task.answer) {
+          className += " correct";
+        } else if (index === state.studentEvaluation.chosenIndex) {
+          className += " wrong";
+        }
+      }
+
+      return `
+        <button
+          type="button"
+          class="${className}"
+          data-option-index="${index}"
+          ${state.studentEvaluation ? "disabled" : ""}
+        >
+          ${escapeHtml(option)}
+        </button>
+      `;
+    })
+    .join("");
+
+  studentFeedback.className = "feedback-panel";
+
+  if (!state.studentEvaluation) {
+    studentFeedbackTitle.textContent = "Выбери ответ";
+    studentFeedbackText.textContent = "После ответа здесь появится короткое объяснение.";
+    return;
+  }
+
+  if (state.studentEvaluation.correct) {
+    studentFeedback.classList.add("success");
+    studentFeedbackTitle.textContent = "Верно";
+  } else {
+    studentFeedback.classList.add("error");
+    studentFeedbackTitle.textContent = "Нужно ещё подумать";
+  }
+
+  studentFeedbackText.textContent = task.explanation || "Пояснение для этой задачи пока не добавлено.";
+}
+
+function renderAll() {
+  renderRoleSwitch();
+  renderAdminMetrics();
+  renderCategoryDatalist();
+  renderAdminTaskList();
+  renderStudentFilters();
+  ensureStudentSelection();
+  renderStudentMetrics();
+  renderStudentTaskList();
+  renderStudentPlayer();
+}
+
+function createTaskFromForm() {
+  const options = optionInputs.map((input) => input.value.trim()).filter(Boolean);
+  const answer = Number(answerInput.value);
+
+  if (options.length < 2) {
+    throw new Error("Нужно заполнить минимум два варианта ответа.");
+  }
+
+  if (answer >= options.length) {
+    throw new Error("Правильный вариант указывает на пустой ответ.");
+  }
+
+  const existingTask = state.tasks.find((task) => task.id === state.editingTaskId);
+  const source = existingTask?.source || "manual";
+
+  return normalizeTask(
+    {
+      id: state.editingTaskId || createId(),
+      title: titleInput.value.trim(),
+      category: categoryInput.value.trim(),
+      difficulty: difficultyInput.value,
+      prompt: promptInput.value.trim(),
+      visual: visualInput.value.trim(),
+      options,
+      answer,
+      explanation: explanationInput.value.trim(),
+      source
+    },
+    source
+  );
+}
+
+function handleFormSubmit(event) {
+  event.preventDefault();
+
+  try {
+    const task = createTaskFromForm();
+    const existingIndex = state.tasks.findIndex((item) => item.id === task.id);
+
+    if (existingIndex >= 0) {
+      state.tasks[existingIndex] = task;
+      setAdminStatus(`Задача "${task.title}" обновлена.`, "success");
+    } else {
+      state.tasks.unshift(task);
+      setAdminStatus(`Задача "${task.title}" создана.`, "success");
+    }
+
+    saveTasks();
+    resetForm();
+    renderAll();
+  } catch (error) {
+    setAdminStatus(error.message, "error");
+  }
+}
+
+function handleAdminTaskAction(event) {
+  const button = event.target.closest("button");
+
+  if (!button) {
+    return;
+  }
+
+  const container = event.target.closest("[data-task-id]");
+  const taskId = container?.dataset.taskId;
+
+  if (!taskId) {
+    return;
+  }
+
+  if (button.dataset.action === "edit") {
+    fillForm(taskId);
+    return;
+  }
+
+  if (button.dataset.action === "delete") {
+    const task = state.tasks.find((item) => item.id === taskId);
+
+    if (!task) {
+      return;
+    }
+
+    const confirmed = window.confirm(`Удалить задачу "${task.title}"?`);
+
+    if (!confirmed) {
+      return;
+    }
+
+    state.tasks = state.tasks.filter((item) => item.id !== taskId);
+    delete state.progress[taskId];
+    saveTasks();
+    saveProgress();
+
+    if (state.selectedStudentTaskId === taskId) {
+      state.selectedStudentTaskId = "";
+      state.studentEvaluation = null;
+    }
+
+    if (state.editingTaskId === taskId) {
+      resetForm();
+    }
+
+    setAdminStatus(`Задача "${task.title}" удалена.`, "success");
+    renderAll();
+  }
+}
+
+async function handleUpload(event) {
+  const file = event.target.files?.[0];
+
+  if (!file) {
+    return;
+  }
+
+  try {
+    const text = await file.text();
+    const parsed = JSON.parse(text);
+    const rawTasks = Array.isArray(parsed) ? parsed : parsed.tasks;
+
+    if (!Array.isArray(rawTasks) || !rawTasks.length) {
+      throw new Error("Файл должен содержать массив задач.");
+    }
+
+    const importedTasks = rawTasks.map((task) => normalizeTask(task, "imported"));
+    state.tasks = [...importedTasks, ...state.tasks];
+    saveTasks();
+    renderAll();
+    setAdminStatus(`Импортировано задач: ${importedTasks.length}.`, "success");
+  } catch (error) {
+    setAdminStatus(error.message, "error");
+  } finally {
+    taskUpload.value = "";
+  }
+}
+
+function handleExport() {
+  const payload = state.tasks.map((task) => ({
+    title: task.title,
+    category: task.category,
+    difficulty: task.difficulty,
+    prompt: task.prompt,
+    visual: task.visual,
+    options: task.options,
+    answer: task.answer,
+    explanation: task.explanation,
+    source: task.source
+  }));
+
+  const blob = new Blob([JSON.stringify({ tasks: payload }, null, 2)], {
+    type: "application/json"
+  });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "logic-spark-tasks.json";
+  link.click();
+  URL.revokeObjectURL(url);
+
+  setAdminStatus("Банк задач выгружен в JSON.", "success");
+}
+
+function handleRestoreDemo() {
+  const confirmed = window.confirm("Сбросить банк задач к демо-набору?");
+
+  if (!confirmed) {
+    return;
+  }
+
+  state.tasks = cloneDefaultTasks();
+  state.progress = {};
+  state.selectedStudentTaskId = "";
+  state.studentEvaluation = null;
+  saveTasks();
+  saveProgress();
+  resetForm();
+  renderAll();
+  setAdminStatus("Демо-набор восстановлен.", "success");
+}
+
+function openStudentTask(taskId) {
+  state.selectedStudentTaskId = taskId;
+  resetStudentEvaluation();
+  renderStudentTaskList();
+  renderStudentPlayer();
+}
+
+function handleStudentTaskList(event) {
+  const button = event.target.closest("button");
+
+  if (!button || button.dataset.action !== "open") {
+    return;
+  }
+
+  const container = event.target.closest("[data-task-id]");
+  const taskId = container?.dataset.taskId;
+
+  if (taskId) {
+    openStudentTask(taskId);
+  }
+}
+
+function recordStudentProgress(task, isCorrect) {
+  const previous = state.progress[task.id] || {
+    attempts: 0,
+    solved: false,
+    correct: false
+  };
+
+  state.progress[task.id] = {
+    attempts: previous.attempts + 1,
+    solved: true,
+    correct: previous.correct || isCorrect
+  };
+
+  saveProgress();
+}
+
+function handleStudentAnswer(event) {
+  const button = event.target.closest("[data-option-index]");
+
+  if (!button || state.studentEvaluation) {
+    return;
+  }
+
+  const task = getSelectedTask();
+
+  if (!task) {
+    return;
+  }
+
+  const chosenIndex = Number(button.dataset.optionIndex);
+  const isCorrect = chosenIndex === task.answer;
+
+  state.studentEvaluation = {
+    chosenIndex,
+    correct: isCorrect
+  };
+
+  recordStudentProgress(task, isCorrect);
+  renderStudentMetrics();
+  renderStudentTaskList();
+  renderStudentPlayer();
+}
+
+function handleNextStudentTask() {
+  const filteredTasks = getStudentFilteredTasks();
+
+  if (!filteredTasks.length) {
+    return;
+  }
+
+  const currentIndex = filteredTasks.findIndex((task) => task.id === state.selectedStudentTaskId);
+  const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % filteredTasks.length : 0;
+
+  state.selectedStudentTaskId = filteredTasks[nextIndex].id;
+  resetStudentEvaluation();
+  renderStudentTaskList();
+  renderStudentPlayer();
+}
+
+roleTabs.forEach((button) => {
+  button.addEventListener("click", () => {
+    state.activeRole = button.dataset.role;
+    renderRoleSwitch();
+  });
 });
 
-restartButton.addEventListener("click", () => {
-  currentTaskIndex = 0;
-  resolved = 0;
-  correct = 0;
-  nextButton.disabled = false;
-  renderTask();
+taskForm.addEventListener("submit", handleFormSubmit);
+resetFormButton.addEventListener("click", () => {
+  resetForm();
+  setAdminStatus("Форма очищена.");
 });
+adminSearch.addEventListener("input", () => {
+  state.adminSearch = adminSearch.value;
+  renderAdminTaskList();
+});
+adminTaskList.addEventListener("click", handleAdminTaskAction);
+taskUpload.addEventListener("change", handleUpload);
+exportButton.addEventListener("click", handleExport);
+restoreDemoButton.addEventListener("click", handleRestoreDemo);
+studentSearch.addEventListener("input", () => {
+  state.studentSearch = studentSearch.value.trim();
+  renderAll();
+});
+studentCategoryFilter.addEventListener("change", () => {
+  state.studentCategory = studentCategoryFilter.value;
+  renderAll();
+});
+studentDifficultyFilter.addEventListener("change", () => {
+  state.studentDifficulty = studentDifficultyFilter.value;
+  renderAll();
+});
+studentTaskList.addEventListener("click", handleStudentTaskList);
+studentTaskOptions.addEventListener("click", handleStudentAnswer);
+studentResetAnswer.addEventListener("click", () => {
+  resetStudentEvaluation();
+  renderStudentPlayer();
+});
+studentNextTask.addEventListener("click", handleNextStudentTask);
 
-renderTask();
+renderAll();
