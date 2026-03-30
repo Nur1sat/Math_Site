@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Logic Spark</title>
+    <meta
+      name="description"
+      content="Платформа логических задач для детей: без деления по классам, с красивым интерфейсом, треками и интерактивным тренажёром."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body id="top">
+    <div class="page-shell">
+      <div class="ambient ambient-left"></div>
+      <div class="ambient ambient-right"></div>
+
+      <header class="hero">
+        <nav class="topbar">
+          <a class="brand" href="#top">
+            <span class="brand-mark">LS</span>
+            <span class="brand-copy">
+              <strong>Logic Spark</strong>
+              <small>пространство для логики</small>
+            </span>
+          </a>
+
+          <div class="topbar-links">
+            <a href="#tracks">Треки</a>
+            <a href="#trainer">Тренажёр</a>
+            <a href="#collections">Подборки</a>
+          </div>
+        </nav>
+
+        <div class="hero-grid">
+          <section class="hero-copy">
+            <span class="eyebrow">Платформа с логическими задачами</span>
+            <h1>Сайт в духе учебного тренажёра, но без классов и уровней по возрасту.</h1>
+            <p class="hero-text">
+              Вместо длинной школьной навигации здесь только понятные логические
+              направления: последовательности, сравнение, стратегии, пространство и
+              внимательность. Каждое задание даёт быстрый результат и объяснение.
+            </p>
+
+            <div class="hero-actions">
+              <a class="button button-primary" href="#trainer">Начать тренировку</a>
+              <a class="button button-secondary" href="#tracks">Посмотреть треки</a>
+            </div>
+
+            <div class="hero-stats">
+              <article class="stat-card">
+                <strong>5</strong>
+                <span>логических треков</span>
+              </article>
+              <article class="stat-card">
+                <strong>12</strong>
+                <span>задач в демо-наборе</span>
+              </article>
+              <article class="stat-card">
+                <strong>1 мин</strong>
+                <span>на быстрый спринт</span>
+              </article>
+            </div>
+          </section>
+
+          <aside class="hero-panel">
+            <div class="panel-badge">Спринт дня</div>
+            <h2>Путь мышления, а не путь по классу.</h2>
+            <ul class="panel-list">
+              <li>
+                <span>Последовательности</span>
+                <strong>4 задачи</strong>
+              </li>
+              <li>
+                <span>Пространственное мышление</span>
+                <strong>3 задачи</strong>
+              </li>
+              <li>
+                <span>Стратегия и выбор</span>
+                <strong>5 задач</strong>
+              </li>
+            </ul>
+            <div class="signal-card">
+              <span>Сегодняшний фокус</span>
+              <strong>Найти правило, а не угадать ответ</strong>
+            </div>
+          </aside>
+        </div>
+      </header>
+
+      <main>
+        <section class="section section-tracks" id="tracks">
+          <div class="section-heading">
+            <span class="eyebrow">Тематические направления</span>
+            <h2>Вместо классов и параграфов только логические маршруты.</h2>
+            <p>
+              Каждая карточка может стать самостоятельной коллекцией заданий. Такой
+              подход короче, понятнее и лучше подходит для отдельного сайта про логику.
+            </p>
+          </div>
+
+          <div class="tracks-grid">
+            <article class="track-card sand">
+              <span class="track-label">Трек 01</span>
+              <h3>Последовательности</h3>
+              <p>Числа, фигуры и символы: находим закономерность и продолжаем ряд.</p>
+              <div class="track-meta">
+                <span>Ритм</span>
+                <span>Паттерны</span>
+              </div>
+            </article>
+
+            <article class="track-card mint">
+              <span class="track-label">Трек 02</span>
+              <h3>Сравнение</h3>
+              <p>Ищем лишнее, замечаем признаки, группируем по логическому правилу.</p>
+              <div class="track-meta">
+                <span>Классификация</span>
+                <span>Признаки</span>
+              </div>
+            </article>
+
+            <article class="track-card coral">
+              <span class="track-label">Трек 03</span>
+              <h3>Пространство</h3>
+              <p>Лево и право, поворот фигуры, зеркальность, путь по клеткам.</p>
+              <div class="track-meta">
+                <span>Воображение</span>
+                <span>Ориентация</span>
+              </div>
+            </article>
+
+            <article class="track-card sky">
+              <span class="track-label">Трек 04</span>
+              <h3>Стратегия</h3>
+              <p>Короткие задачи на выбор хода, перебор вариантов и причинно-следственные связи.</p>
+              <div class="track-meta">
+                <span>Решения</span>
+                <span>Планирование</span>
+              </div>
+            </article>
+
+            <article class="track-card berry">
+              <span class="track-label">Трек 05</span>
+              <h3>Внимательность</h3>
+              <p>Удерживаем условие, сравниваем детали и замечаем маленькие различия.</p>
+              <div class="track-meta">
+                <span>Фокус</span>
+                <span>Точность</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section split-section">
+          <div class="section-heading compact">
+            <span class="eyebrow">Как можно подать контент</span>
+            <h2>Структура проще школьного каталога.</h2>
+          </div>
+
+          <div class="split-grid">
+            <article class="editorial-card">
+              <span class="mini-tag">Новый формат</span>
+              <h3>Подборки по навыкам</h3>
+              <p>
+                Например: "Найди закономерность", "Задачи на внимание", "Хитрые сравнения",
+                "Логические лабиринты". Пользователь сразу понимает, что он тренирует.
+              </p>
+            </article>
+
+            <article class="editorial-card">
+              <span class="mini-tag">Меньше шума</span>
+              <h3>Одно действие на экране</h3>
+              <p>
+                Не показывать деревья классов, предметов и тем. На первом экране только
+                цель, треки и кнопка начать решать.
+              </p>
+            </article>
+
+            <article class="editorial-card">
+              <span class="mini-tag">Больше мотивации</span>
+              <h3>Спринты и серии</h3>
+              <p>
+                Короткие серии из 5-7 задач работают лучше обычных списков. После каждой
+                задачи ребёнок получает мгновенный отклик и видит прогресс.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section trainer-section" id="trainer">
+          <div class="section-heading">
+            <span class="eyebrow">Интерактивный блок</span>
+            <h2>Демо-тренажёр для логических задач.</h2>
+            <p>
+              Ниже пример экрана, который уже можно использовать как основу для будущего сайта.
+            </p>
+          </div>
+
+          <div class="trainer-layout">
+            <aside class="trainer-sidebar">
+              <div class="sidebar-card">
+                <span class="sidebar-kicker">Режим</span>
+                <h3>Быстрый спринт</h3>
+                <p>12 коротких задач, объяснение после каждого ответа и общий счёт в конце.</p>
+              </div>
+
+              <div class="sidebar-card stats-stack">
+                <div>
+                  <span>Решено</span>
+                  <strong id="resolved-count">0 / 12</strong>
+                </div>
+                <div>
+                  <span>Верно</span>
+                  <strong id="correct-count">0</strong>
+                </div>
+                <div>
+                  <span>Текущий трек</span>
+                  <strong id="current-track">Последовательности</strong>
+                </div>
+              </div>
+
+              <div class="sidebar-card upcoming">
+                <span class="sidebar-kicker">Дальше по очереди</span>
+                <ul id="upcoming-list"></ul>
+              </div>
+            </aside>
+
+            <div class="trainer-card">
+              <div class="trainer-topline">
+                <span class="task-pill" id="task-category">Последовательности</span>
+                <span class="difficulty-pill" id="task-level">Лёгкое</span>
+              </div>
+
+              <p class="task-index" id="task-index">Задача 1 из 12</p>
+              <h3 class="task-question" id="task-question"></h3>
+              <div class="task-visual" id="task-visual"></div>
+
+              <div class="task-options" id="task-options"></div>
+
+              <div class="feedback-panel" id="feedback-panel" aria-live="polite">
+                <strong id="feedback-title">Выбери один вариант</strong>
+                <p id="feedback-text">
+                  После ответа здесь появится короткое объяснение.
+                </p>
+              </div>
+
+              <div class="task-actions">
+                <button class="button button-ghost" id="restart-button" type="button">
+                  Начать заново
+                </button>
+                <button class="button button-primary" id="next-button" type="button">
+                  Следующая задача
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section collections-section" id="collections">
+          <div class="section-heading compact">
+            <span class="eyebrow">Готовые подборки</span>
+            <h2>Что можно добавить дальше.</h2>
+          </div>
+
+          <div class="collections-grid">
+            <article class="collection-card">
+              <span>01</span>
+              <h3>Логика на каждый день</h3>
+              <p>Небольшие ежедневные задания с прогрессом по неделе.</p>
+            </article>
+            <article class="collection-card">
+              <span>02</span>
+              <h3>Игровые баттлы</h3>
+              <p>Серия задач против таймера или с накоплением звёзд за точность.</p>
+            </article>
+            <article class="collection-card">
+              <span>03</span>
+              <h3>Подборки по сложности</h3>
+              <p>Не по возрасту, а по глубине рассуждения: старт, уверенно, продвинуто.</p>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
