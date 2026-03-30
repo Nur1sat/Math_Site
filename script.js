@@ -1,6 +1,6 @@
 const STORAGE_KEYS = {
-  tasks: "logic-spark.tasks.v3",
-  progress: "logic-spark.progress.v3",
+  tasks: "logic-spark.tasks.v2",
+  progress: "logic-spark.progress.v2",
   adminAuth: "logic-spark.admin-auth.v1"
 };
 
